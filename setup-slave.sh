@@ -4,7 +4,7 @@ echo "Enter slave name: "
 read SLAVENAME
 
 echo "Enter slave password: "
-read -s PASSWORD
+read PASSWORD
 
 echo "creating slave: $SLAVENAME"
 buildslave create-slave slave localhost:9987 "${SLAVENAME}" "${PASSWORD}"
