@@ -1,26 +1,23 @@
 #!/bin/sh
 
-if [ ! -d slave ]
+if hostname | grep -q '^ip-'
 then
-	echo "No slave/ dir, setting up..."
-	if hostname | grep -q '^ip-'
-	then
-		echo "Guessing we are on EC2, reading user-data"
-		read SLAVENAME PASSWORD <<EOF
+	echo "Guessing we are on EC2, reading user-data"
+	read SLAVENAME PASSWORD <<EOF
 `curl -s http://169.254.169.254/latest/user-data`
 EOF
-	else
-		echo "Enter slave name: "
-		read SLAVENAME
-		echo "Enter slave password: "
-		read PASSWORD
-	fi
-
-	echo "creating slave: ${SLAVENAME:?}"
-	buildslave create-slave slave localhost:9987 "${SLAVENAME:?}" "${PASSWORD:?}"
-	echo "admin@rust-lang.org" >slave/info/admin
-	echo $HOSTNAME >slave/info/host
+else
+	echo "Enter slave name: "
+	read SLAVENAME
+	echo "Enter slave password: "
+	read PASSWORD
 fi
+
+rm -f slave/buildbot.tac* slave/twistd.* slave/info/admin slave/info/host
+echo "(re)creating slave: ${SLAVENAME:?}"
+buildslave create-slave --force slave localhost:9987 "${SLAVENAME:?}" "${PASSWORD:?}"
+echo "admin@rust-lang.org" >slave/info/admin
+echo $HOSTNAME >slave/info/host
 
 case $MACHTYPE in
 	*-msys)
