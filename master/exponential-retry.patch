@@ -1,0 +1,237 @@
+commit 95deef27d7c531ead19e0ac86a9aa1546d4ee7f9
+Author: Dustin J. Mitchell <dustin@mozilla.com>
+Date:   Mon Jan 23 00:07:26 2012 -0600
+
+    Re-run queries after certain OperationalErrors
+    
+    Sometimes malformed SQL can generate an OperationalError, so this looks
+    at the message itself.  It's unclear how this will work with
+    localization.
+    
+    The code uses an exponential backoff algorithm (with a relatively small
+    multiplier), and will retry for a day, which seems a reasonable
+    get-the-db-server-fixed time.
+    
+    Fixes #2005.  Hoepfully for good!
+
+diff --git a/master/buildbot/db/pool.py b/master/buildbot/db/pool.py
+index 2c878bc..56ebfb7 100644
+--- a/master/buildbot/db/pool.py
++++ b/master/buildbot/db/pool.py
+@@ -21,6 +21,7 @@ import os
+ import sqlalchemy as sa
+ import twisted
+ import tempfile
++from buildbot.process import metrics
+ from twisted.internet import reactor, threads, defer
+ from twisted.python import threadpool, failure, versions, log
+ 
+@@ -150,71 +151,92 @@ class DBThreadPool(threadpool.ThreadPool):
+         reactor.removeSystemEventTrigger(self._stop_evt)
+         self._stop()
+ 
+-    def do(self, callable, *args, **kwargs):
+-        def thd():
+-            conn = self.engine.contextual_connect()
++    # Try about 170 times over the space of a day, with the last few tries
++    # being about an hour apart.  This is designed to span a reasonable amount
++    # of time for repairing a broken database server, while still failing
++    # actual problematic queries eventually
++    BACKOFF_START = 1.0
++    BACKOFF_MULT = 1.05
++    MAX_OPERATIONALERROR_TIME = 3600*24 # one day
++    def __thd(self, with_engine, callable, args, kwargs):
++        # try to call callable(arg, *args, **kwargs) repeatedly until no
++        # OperationalErrors occur, where arg is either the engine (with_engine)
++        # or a connection (not with_engine)
++        backoff = self.BACKOFF_START
++        start = time.time()
++        while True:
++            if with_engine:
++                arg = self.engine
++            else:
++                arg = self.engine.contextual_connect()
++
+             if self.__broken_sqlite: # see bug #1810
+-                conn.execute("select * from sqlite_master")
++                arg.execute("select * from sqlite_master")
+             try:
+-                rv = callable(conn, *args, **kwargs)
++                rv = callable(arg, *args, **kwargs)
+                 assert not isinstance(rv, sa.engine.ResultProxy), \
+                         "do not return ResultProxy objects!"
++            except sa.exc.OperationalError, e:
++                text = e.orig.args[0]
++                if "Lost connection" in text \
++                    or "database is locked" in text:
++
++                    # see if we've retried too much
++                    elapsed = time.time() - start
++                    if elapsed > self.MAX_OPERATIONALERROR_TIME:
++                        raise
++
++                    metrics.MetricCountEvent.log(
++                            "DBThreadPool.retry-on-OperationalError")
++                    log.msg("automatically retrying query after "
++                            "OperationalError (%ss sleep)" % backoff)
++
++                    # sleep (remember, we're in a thread..)
++                    time.sleep(backoff)
++                    backoff *= self.BACKOFF_MULT
++
++                    # and re-try
++                    continue
++                else:
++                    raise
+             finally:
+-                conn.close()
+-            return rv
+-        return threads.deferToThreadPool(reactor, self, thd)
++                if not with_engine:
++                    arg.close()
++            break
++        return rv
++
++    def do(self, callable, *args, **kwargs):
++        return threads.deferToThreadPool(reactor, self,
++                self.__thd, False, callable, args, kwargs)
+ 
+     def do_with_engine(self, callable, *args, **kwargs):
+-        def thd():
+-            if self.__broken_sqlite: # see bug #1810
+-                self.engine.execute("select * from sqlite_master")
+-            rv = callable(self.engine, *args, **kwargs)
+-            assert not isinstance(rv, sa.engine.ResultProxy), \
+-                    "do not return ResultProxy objects!"
+-            return rv
+-        return threads.deferToThreadPool(reactor, self, thd)
++        return threads.deferToThreadPool(reactor, self,
++                self.__thd, True, callable, args, kwargs)
+ 
+     # older implementations for twisted < 0.8.2, which does not have
+     # deferToThreadPool; this basically re-implements it, although it gets some
+     # of the synchronization wrong - the thread may still be "in use" when the
+     # deferred fires in the parent, which can lead to database accesses hopping
+     # between threads.  In practice, this should not cause any difficulty.
+-    def do_081(self, callable, *args, **kwargs): # pragma: no cover
+-        d = defer.Deferred()
+-        def thd():
+-            try:
+-                conn = self.engine.contextual_connect()
+-                if self.__broken_sqlite: # see bug #1810
+-                    conn.execute("select * from sqlite_master")
++    if twisted.version < versions.Version('twisted', 8, 2, 0):
++        def __081_wrap(self, with_engine, callable, args, kwargs): # pragma: no cover
++            d = defer.Deferred()
++            def thd():
+                 try:
+-                    rv = callable(conn, *args, **kwargs)
+-                    assert not isinstance(rv, sa.engine.ResultProxy), \
+-                            "do not return ResultProxy objects!"
+-                finally:
+-                    conn.close()
+-                reactor.callFromThread(d.callback, rv)
+-            except:
+-                reactor.callFromThread(d.errback, failure.Failure())
+-        self.callInThread(thd)
+-        return d
+-    def do_with_engine_081(self, callable, *args, **kwargs): # pragma: no cover
+-        d = defer.Deferred()
+-        def thd():
+-            try:
+-                conn = self.engine
+-                if self.__broken_sqlite: # see bug #1810
+-                    conn.execute("select * from sqlite_master")
+-                rv = callable(conn, *args, **kwargs)
+-                assert not isinstance(rv, sa.engine.ResultProxy), \
+-                        "do not return ResultProxy objects!"
+-                reactor.callFromThread(d.callback, rv)
+-            except:
+-                reactor.callFromThread(d.errback, failure.Failure())
+-        self.callInThread(thd)
+-        return d
++                    reactor.callFromThread(d.callback,
++                            self.__thd(with_engine, callable, args, kwargs))
++                except:
++                    reactor.callFromThread(d.errback,
++                            failure.Failure())
++            self.callInThread(thd)
++            return d
++
++        def do_081(self, callable, *args, **kwargs): # pragma: no cover
++            return self.__081_wrap(False, callable, args, kwargs)
++
++        def do_with_engine_081(self, callable, *args, **kwargs): # pragma: no cover
++            return self.__081_wrap(True, callable, args, kwargs)
+ 
+-    # use the 0.8.1 versions on old Twisteds
+-    if twisted.version < versions.Version('twisted', 8, 2, 0):
+         do = do_081
+         do_with_engine = do_with_engine_081
+ 
+diff --git a/master/buildbot/test/unit/test_db_pool.py b/master/buildbot/test/unit/test_db_pool.py
+index 1f8ab0f..ca68369 100644
+--- a/master/buildbot/test/unit/test_db_pool.py
++++ b/master/buildbot/test/unit/test_db_pool.py
+@@ -13,9 +13,11 @@
+ #
+ # Copyright Buildbot Team Members
+ 
++import os
++import time
+ import sqlalchemy as sa
+ from twisted.trial import unittest
+-from twisted.internet import defer
++from twisted.internet import defer, reactor
+ from buildbot.db import pool
+ from buildbot.test.util import db
+ 
+@@ -104,6 +106,48 @@ class Basic(unittest.TestCase):
+         return d
+ 
+ 
++class Stress(unittest.TestCase):
++
++    def setUp(self):
++        setup_engine = sa.create_engine('sqlite:///test.sqlite')
++        setup_engine.execute("pragma journal_mode = wal")
++        setup_engine.execute("CREATE TABLE test (a integer, b integer)")
++
++        self.engine = sa.create_engine('sqlite:///test.sqlite')
++        self.engine.optimal_thread_pool_size = 2
++        self.pool = pool.DBThreadPool(self.engine)
++
++    def tearDown(self):
++        self.pool.shutdown()
++        os.unlink("test.sqlite")
++
++    @defer.deferredGenerator
++    def test_inserts(self):
++        def write(conn):
++            trans = conn.begin()
++            conn.execute("INSERT INTO test VALUES (1, 1)")
++            time.sleep(31)
++            trans.commit()
++        d1 = self.pool.do(write)
++
++        def write2(conn):
++            trans = conn.begin()
++            conn.execute("INSERT INTO test VALUES (1, 1)")
++            trans.commit()
++        d2 = defer.Deferred()
++        d2.addCallback(lambda _ :
++            self.pool.do(write2))
++        reactor.callLater(0.1, d2.callback, None)
++
++        wfd = defer.waitForDeferred(
++            defer.DeferredList([ d1, d2 ]))
++        yield wfd
++        wfd.getResult()
++
++    # don't run this test, since it takes 30s
++    del test_inserts
++
++
+ class BasicWithDebug(Basic):
+ 
+     # same thing, but with debug=True

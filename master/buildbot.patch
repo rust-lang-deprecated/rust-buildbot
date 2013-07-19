@@ -1,0 +1,110 @@
+--- /usr/local/lib/python2.6/dist-packages/buildbot-0.8.5-py2.6.egg/buildbot/db/changes.py.orig	2012-11-14 10:38:43.000000000 -0800
++++ /usr/local/lib/python2.6/dist-packages/buildbot-0.8.5-py2.6.egg/buildbot/db/changes.py	2012-11-14 12:16:59.000000000 -0800
+@@ -124,13 +124,40 @@
+         d = self.db.pool.do(thd)
+         return d
+ 
+-    def getRecentChanges(self, count):
++    def getRecentChanges(self, count, revFilter=None, debugInfo=None):
+         def thd(conn):
+-            # get the changeids from the 'changes' table
++
+             changes_tbl = self.db.model.changes
++            wh = None
++            if revFilter != None:
++                n_wheres = 0
++                for k in ["branch", "author", "repository", "project"]:
++                    if k in revFilter:
++                        # FIXME: sanitize v here? How careful is SQLAlchemy?
++                        v = revFilter[k]
++                        if debugInfo:
++                            debugInfo[k] = v
++                        if type(v) == list:
++                            clause = (changes_tbl.c[k] == v[0])
++                            for vv in v[1:]:
++                                clause = clause | (changes_tbl.c[k] == vv)
++                        else:
++                            clause = (changes_tbl.c[k] == v)
++                        
++                        if n_wheres > 0:
++                            wh = wh & clause
++                        else:
++                            wh = clause
++                        n_wheres += 1
++
++            if debugInfo:
++                debugInfo["whereclause"] = str(wh)
++
++            # get the changeids from the 'changes' table
+             q = sa.select([changes_tbl.c.changeid],
+-                    order_by=[sa.desc(changes_tbl.c.changeid)],
+-                    limit=count)
++                          whereclause=wh,
++                          order_by=[sa.desc(changes_tbl.c.changeid)],
++                          limit=count)
+             rp = conn.execute(q)
+             changeids = [ row.changeid for row in rp ]
+             rp.close()
+--- /usr/local/lib/python2.6/dist-packages/buildbot-0.8.5-py2.6.egg/buildbot/status/web/console.py.orig	2012-11-14 10:01:32.000000000 -0800
++++ /usr/local/lib/python2.6/dist-packages/buildbot-0.8.5-py2.6.egg/buildbot/status/web/console.py	2012-11-14 13:10:00.000000000 -0800
+@@ -163,11 +163,11 @@
+         return allChanges                
+ 
+     @defer.deferredGenerator
+-    def getAllChanges(self, request, status, debugInfo):
++    def getAllChanges(self, request, status, revFilter, debugInfo):
+         master = request.site.buildbot_service.master
+ 
+         wfd = defer.waitForDeferred(
+-                master.db.changes.getRecentChanges(25))
++                master.db.changes.getRecentChanges(25, revFilter, debugInfo))
+         yield wfd
+         chdicts = wfd.getResult()
+ 
+@@ -441,7 +441,7 @@
+                     if self.comparator.isRevisionEarlier(build, revision):
+                         firstNotIn = build
+                         break
+-                    else:
++                    elif build.revision == revision.revision:
+                         introducedIn = build
+                         
+                 # Get the results of the first build with the revision, and the
+@@ -637,19 +637,27 @@
+ 
+         # Get all changes we can find.  This is a DB operation, so it must use
+         # a deferred.
+-        d = self.getAllChanges(request, status, debugInfo)
++
++        revFilter = {}
++        if branch != ANYBRANCH:
++            revFilter['branch'] = branch
++        if devName:
++            revFilter['author'] = devName
++        if repository:
++            revFilter['repository'] = repository
++        if project:
++            revFilter['project'] = project
++
++        d = self.getAllChanges(request, status, revFilter, debugInfo)
+         def got_changes(allChanges):
+             debugInfo["source_all"] = len(allChanges)
+ 
+-            revFilter = {}
+-            if branch != ANYBRANCH:
+-                revFilter['branch'] = branch
+-            if devName:
+-                revFilter['who'] = devName
+-            if repository:
+-                revFilter['repository'] = repository
+-            if project:
+-                revFilter['project'] = project
++            # FIXME: called 'who' in console and Change.py, 'author' in db model,
++            # 'name' in query string. Pointless difference, reconcile.
++            if "author" in revFilter:
++                revFilter['who'] = revFilter['author']
++                del revFilter['author']
++
+             revisions = list(self.filterRevisions(allChanges, max_revs=numRevs,
+                                                             filter=revFilter))
+             debugInfo["revision_final"] = len(revisions)

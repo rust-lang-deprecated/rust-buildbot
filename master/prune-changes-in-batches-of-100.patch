@@ -1,0 +1,18 @@
+--- buildbot/db/changes.py	2013-07-19 16:10:55.000000000 -0700
++++ buildbot/db/changes.py.orig	2012-11-14 10:38:43.000000000 -0800
+@@ -209,12 +182,9 @@
+             for table_name in ('scheduler_changes', 'sourcestamp_changes',
+                                'change_files', 'change_links',
+                                'change_properties', 'changes', 'change_users'):
+-                remaining = ids_to_delete[:]
+-                while remaining:
+-                    batch, remaining = remaining[:100], remaining[100:]
+-                    table = self.db.model.metadata.tables[table_name]
+-                    conn.execute(
+-                        table.delete(table.c.changeid.in_(batch)))
++                table = self.db.model.metadata.tables[table_name]
++                conn.execute(
++                    table.delete(table.c.changeid.in_(ids_to_delete)))
+         return self.db.pool.do(thd)
+ 
+     def _chdict_from_change_row_thd(self, conn, ch_row):
