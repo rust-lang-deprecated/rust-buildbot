@@ -1,0 +1,63 @@
+--- ec2buildslave.py	2011-09-03 12:59:09.000000000 -0700
++++ /usr/local/lib/python2.6/dist-packages/buildbot-0.8.5-py2.6.egg/buildbot/ec2buildslave.py	2013-07-19 22:49:28.000000000 -0700
+@@ -48,6 +48,7 @@
+                  aws_id_file_path=None, user_data=None, region=None,
+                  keypair_name='latent_buildbot_slave',
+                  security_name='latent_buildbot_slave',
++                 subnet_id=None,
+                  max_builds=None, notify_on_missing=[], missing_timeout=60*20,
+                  build_wait_timeout=60*10, properties={}, locks=None):
+ 
+@@ -82,6 +83,7 @@
+         self.instance_type = instance_type
+         self.keypair_name = keypair_name
+         self.security_name = security_name
++        self.subnet_id = subnet_id
+         self.user_data = user_data
+         if identifier is None:
+             assert secret_identifier is None, (
+@@ -242,9 +244,14 @@
+ 
+     def _start_instance(self):
+         image = self.get_image()
+-        reservation = image.run(
+-            key_name=self.keypair_name, security_groups=[self.security_name],
+-            instance_type=self.instance_type, user_data=self.user_data)
++        if self.subnet_id:
++            reservation = image.run(
++                key_name=self.keypair_name, subnet_id=self.subnet_id,
++                instance_type=self.instance_type, user_data=self.user_data)
++        else:
++            reservation = image.run(
++                key_name=self.keypair_name, security_groups=[self.security_name],
++                instance_type=self.instance_type, user_data=self.user_data)
+         self.instance = reservation.instances[0]
+         log.msg('%s %s starting instance %s' %
+                 (self.__class__.__name__, self.slavename, self.instance.id))
+@@ -263,10 +270,9 @@
+             minutes = duration//60
+             seconds = duration%60
+             log.msg('%s %s instance %s started on %s '
+-                    'in about %d minutes %d seconds (%s)' %
++                    'in about %d minutes %d seconds' %
+                     (self.__class__.__name__, self.slavename,
+-                     self.instance.id, self.dns, minutes, seconds,
+-                     self.output.output))
++                     self.instance.id, self.dns, minutes, seconds))
+             if self.elastic_ip is not None:
+                 self.instance.use_ip(self.elastic_ip)
+             return [self.instance.id,
+@@ -295,7 +301,12 @@
+             self.conn.disassociate_address(self.elastic_ip.public_ip)
+         instance.update()
+         if instance.state not in (SHUTTINGDOWN, TERMINATED):
+-            instance.terminate()
++            if hasattr(instance, "terminate"):
++                instance.terminate()
++            elif hasattr(instance, "stop"):
++                instance.stop()
++            else:
++                raise ValueError('instance has no method for stopping')
+             log.msg('%s %s terminating instance %s' %
+                     (self.__class__.__name__, self.slavename, instance.id))
+         duration = 0
