@@ -50,13 +50,17 @@
 (not currently connected)
 {% else %}
 </p>
-  {% if authz.advertiseAction('gracefulShutdown') %}
+  {% if authz.advertiseAction('gracefulShutdown', request) %}
     <h2>Graceful Shutdown</h2>
     {% if slave.getGraceful() %}
       <p>Slave will shut down gracefully when it is idle.</p>
     {% else %}
       {{ forms.graceful_shutdown(shutdown_url, authz) }}
     {% endif %}
+  {% endif %}
+  {% if authz.advertiseAction('pauseSlave', request) %}
+    <h2>Pause Slave</h2>
+    {{ forms.pause_slave(pause_url, authz, slave.isPaused()) }}
   {% endif %}
 {% endif %}
 </div>
