@@ -1,20 +1,20 @@
 #!/bin/sh
 
-if hostname | grep -q '^ip-'
+if [ "$1" = "--manual" ]
 then
-        # Some images take time for the user data to appear
-        sleep 1
-	echo "Guessing we are on EC2, reading user-data"
-	read SLAVENAME PASSWORD MASTER_ADDY <<EOF
-`curl -s http://169.254.169.254/latest/user-data`
-EOF
-else
 	echo "Enter slave name: "
 	read SLAVENAME
 	echo "Enter slave password: "
 	read PASSWORD
 	echo "Enter master address: "
 	read MASTER_ADDY
+else
+        # Some images take time for the user data to appear
+        sleep 1
+	echo "Guessing we are on EC2, reading user-data"
+	read SLAVENAME PASSWORD MASTER_ADDY <<EOF
+`curl -s http://169.254.169.254/latest/user-data`
+EOF
 fi
 
 rm -f slave/buildbot.tac* slave/twistd.* slave/info/admin slave/info/host
