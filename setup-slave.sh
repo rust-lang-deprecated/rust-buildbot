@@ -28,7 +28,11 @@ echo "connect = ${MASTER_ADDY:?}" >> rust-buildbot-slave-stunnel-final.conf
 
 case $MACHTYPE in
 	*-msys)
-				# service will start via service console
+	        # strip out a line that doesn't work on windows
+	        cat rust-buildbot-slave-stunnel-final.conf | sed 's/pid =//' > stunnel-tmp.conf && mv stunnel-tmp.conf rust-buildbot-slave-stunnel-final.conf
+	        cp rust-buildbot-slave-stunnel-final.conf "/c/Program Files (x86)/stunnel/stunnel.conf"
+		net start stunnel
+		net start buildbot
 		;;
 	*)
 		echo "starting stunnel..."
