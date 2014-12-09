@@ -16,4 +16,5 @@ master/state.sqlite
 master/twistd.log
 master/twistd.pid
 rust-bot-privkey.pem
-
+rust-bot-sign-secretkey.asc
+rust-bot-sign-passphrase
