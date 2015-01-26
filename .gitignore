@@ -9,6 +9,8 @@ master/gitpoller*
 master/http.log
 master/master.cfg.txt
 master/master.cfg.sample
+master/passwords.py
+master/passwords.pyc
 master/public_html
 master/runtests
 master/slave-list.txt
