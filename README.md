@@ -23,3 +23,10 @@ reboot using cron:
 ```
 > stunnel rust-buildbot-slave-stunnel-final.conf && buildslave restart slave
 ```
+
+# License
+
+This software is distributed under the terms of both the MIT license
+and/or the Apache License (Version 2.0), at your option.
+
+See [LICENSE-APACHE](LICENSE-APACHE), [LICENSE-MIT](LICENSE-MIT) for details.
