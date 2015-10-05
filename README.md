@@ -24,6 +24,43 @@ reboot using cron:
 > stunnel rust-buildbot-slave-stunnel-final.conf && buildslave restart slave
 ```
 
+# Running the Master
+
+```
+$ cd rust-buildbot/master
+$ buildbot start
+```
+
+# Adding a new builder
+
+This requires some digging in `master.cfg`. If the new builder will be gated,
+you'll also have to add it in `/home/rustbuild/homu/cfg.toml`.
+
+* Choose the new builder's name. 
+
+    * If it runs tests with optimizations enabled, the name will contain
+      `-opt`. 
+
+    * If the tests are run without optimizations, the name should contain
+      `-nopt-t`. 
+
+    * If you're toggling a new option, pick the unique string that represents
+      the option at hand.
+
+* Add the new builder name to the `auto_platforms_dev` and
+  `auto_platforms_prod` lists.
+
+* Add the new builder to `dist_nogate_platforms` (or the alternative for
+  gated). Its name will have acquired an `auto-` prefix at this point.
+
+* Under `for p in auto_platforms`, add logic to check for the unique string
+  from the name. Yes, it's terrible. I'm sorry.
+
+* Under the next `for p in auto_platforms`, set your new flag according to the
+  value you read from the unique string in the previous step.
+
+Pull requests to simplify this workflow are welcome. 
+
 # License
 
 This software is distributed under the terms of both the MIT license
