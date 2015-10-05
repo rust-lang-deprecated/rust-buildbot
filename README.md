@@ -61,6 +61,28 @@ you'll also have to add it in `/home/rustbuild/homu/cfg.toml`.
 
 Pull requests to simplify this workflow are welcome. 
 
+# It's broken!
+
+Sometimes the queue gets stuck. The most obvious symptom is if a PR takes
+substantially longer than usual to build. 
+
+First, check Homu's queue [here](http://buildbot.rust-lang.org/homu/queue/rust). 
+If Homu hasn't seen the PR, one can repeat the `r+`. If that doesn't work,
+restart Homu on the buildmaster. 
+
+If the PR is listed as "pending" in the Homu queue, check for pending jobs on
+[the grid](http://buildbot.rust-lang.org/grid?branch=auto&width=10). If there
+are no pending jobs in the grid, kick Homu by having someone with permissions
+on the repo say "@bors: retry force" on the PR that's stuck. 
+
+If the grid is aware of the jobs, check for lost buildslaves. When a builder
+gets lost, its name will be purple and its status will include "slave lost".
+This means that either the host needs to be booted or the buildbot process on
+it needs to be restarted. 
+
+If the above steps fail, restart the Buildbot process on the production
+buildmaster.
+
 # License
 
 This software is distributed under the terms of both the MIT license
