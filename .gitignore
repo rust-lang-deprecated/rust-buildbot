@@ -4,7 +4,6 @@ master/auto*
 master/dist*
 master/try*
 master/snap3*
-master/buildbot.tac
 master/gitpoller*
 master/http.log
 master/master.cfg.txt
