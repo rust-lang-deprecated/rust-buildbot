@@ -83,6 +83,33 @@ it needs to be restarted.
 If the above steps fail, restart the Buildbot process on the production
 buildmaster.
 
+# Testing Locally
+
+## `master.cfg.txt`
+
+To do things with this Buildbot on your local machine, you'll need to create
+the file `master/master.cfg.txt`. `master.cfg` reads secrets out of it at
+startup. 
+
+```
+env prod
+master_addy 11.22.333.4444:5678
+git_source git://github.com/rust-lang/rust.git
+cargo_source git://github.com/rust-lang/cargo.git
+packaging_source git://github.com/rust-lang/rust-packaging.git
+s3_addy s3://your-bucket-name-here
+s3_cargo_addy s3://your-other-bucket-name-here
+homu_secret RFqnZtXnRhD66qv11WOGIkuGn2YzvylOcxlqqXZmSq4RaLpXfb
+dist_server_addy http://your-bucket-name.here.s3-website-aws-region.amazonaws.com
+```
+
+* `master_addy` is the address and port where buildmaster is running
+* `s3_addy` and `s3_cargo_addy` are buckets where artefacts will get uploaded
+* `homu_secret` is a string that you can get from `pwgen -s 64 -n 1` or so,
+   which also appears in `~/rustbuild/homu/cfg.toml` under `repo.rust.buildbot`
+   and `repo.cargo.buildbot`. 
+* `dist_server_addy` is the url of that bucket where stuff gets uploaded
+
 # License
 
 This software is distributed under the terms of both the MIT license
