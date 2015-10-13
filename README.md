@@ -83,6 +83,22 @@ it needs to be restarted.
 If the above steps fail, restart the Buildbot process on the production
 buildmaster.
 
+## Homu is broken!
+
+If the Homu status page linked above won't load, something is wrong with Homu. 
+
+To start Homu, SSH into the buildmaster as root, then:
+
+```
+# screen -R             # Or `screen -S homu` if there's no screen session
+# su rustbuild
+$ cd /home/rustbuild/homu
+$ .venv/bin/python homu/main.py 2>&1 | tee homu.log
+```
+
+Often attaching to the screen then killing Homu (ctrl+c) and rerunning the
+prior command (up-arrow, enter) is all this takes. 
+
 # Testing Locally
 
 ## `master.cfg.txt`
