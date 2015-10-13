@@ -110,6 +110,61 @@ dist_server_addy http://your-bucket-name.here.s3-website-aws-region.amazonaws.co
    and `repo.cargo.buildbot`. 
 * `dist_server_addy` is the url of that bucket where stuff gets uploaded
 
+## `master/slave-list.txt`
+
+```
+# This file is a slave-name / password file that should
+# not be checked in to the git repository for rust buildbot,
+# just held in the master work-dir on the host it's running on
+
+# these are aws latent
+linux1 pA$sw0rd     ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3
+linux2 pA$sw0rd     ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3
+linux3 pA$sw0rd     ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3
+linux4 pA$sw0rd     ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3
+linux5 pA$sw0rd     ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3
+linux6 pA$sw0rd     ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3
+
+# AWS
+linux-64-x-android-t pA$sw0rd  ami=ami-00112233 instance_type=c3.2xlarge max_builds=1 special=true
+
+# this is an old CentOS 6 EC2 VM used to build snapshots
+linux-snap pA$sw0rd ami=ami-00112233 instance_type=c3.2xlarge max_builds=3 snap=true dist=true special=true
+
+# these two are aws latent
+win1 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win2 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win3 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win4 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win5 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win6 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win7 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+win8 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=3 snap=true
+
+# bug #21434 makes max_builds=1 fail for dist builds because DirectoryUpload hits locking exceptions
+windist1 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=1 snap=true dist=true special=true
+windist2 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=1 snap=true dist=true special=true
+windist3 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=1 snap=true dist=true special=true
+windist4 pA$sw0rd       ami=ami-a1b2c3d4 instance_type=c3.2xlarge max_builds=1 snap=true dist=true special=true
+
+# community-maintained -- these never connect to dev
+#bitrig1        pA$sw0rd               max_builds=2 snap=true
+#freebsd10_32-1 pA$sw0rd               max_builds=2 snap=true
+#freebsd10_64-1 pA$sw0rd               max_builds=2 snap=true
+```
+
+The passwords and AMI IDs must, of course, be replaced with usable values.
+
+## `master/passwords.py`
+
+```
+users = [
+    ('username', 'hunter2'),
+    ('otheruser', 'wordpass')
+]
+```
+These are for logging into the Buildbot web interface.
+
 # License
 
 This software is distributed under the terms of both the MIT license
