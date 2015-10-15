@@ -44,6 +44,10 @@ case $MACHTYPE in
 			fi
 		done
 		echo "starting slave..."
-		buildslave restart slave
+                if [ "$NODAEMON" = "1" ]; then
+		    buildslave restart --nodaemon slave
+                else
+		    buildslave restart slave
+                fi
 		;;
 esac
