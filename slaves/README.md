@@ -69,10 +69,9 @@ likely kill the container and need to be re-run from the external command line.
 All our build slaves run inside of a bare-bones AMI. It should be recreatable as
 follows:
 
-1. Start up a fresh AMI. This can be either Ubuntu or some other Linux distro
-   (e.g. the Amazon AMI). The current image uses the Amazon AMI.
-2. Install docker
-3. Make docker runnable without `sudo`
+1. Start up a fresh AMI.
+2. Install docker (go to docker's home page to see how)
+3. Make docker runnable without `sudo` (the install normally says how)
 4. Add the following to `crontab`:
 
     ```
@@ -94,9 +93,3 @@ follows:
    Note that this means that whenever the AMI boots the first thing it will do
    is download a likely multi-gigabyte image from the Docker hub to run locally,
    but hey that's not so bad!
-
-You can follow the [standard instructions][install] installing docker on the
-Amazon AMI and making it runnable without `sudo`. After this the AMI should be
-quite stable and not need to change that often hopefully!
-
-[install]: http://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html#install_docker
