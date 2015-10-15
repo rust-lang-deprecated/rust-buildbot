@@ -52,6 +52,18 @@ docker build -t alexcrichton/rust-slave-linux:2015-10-15 -f linux/Dockerfile .
 docker push alexcrichton/rust-slave-linux:2015-10-15
 ```
 
+## Debugging a docker image in prod
+
+1. Obtain the IP of the slave from the AWS console
+2. SSH into the VM, currently with the username `ec2-user`
+3. Run `docker ps` and look under `NAMES` to find the name of the currently
+   running container
+4. Run `docker exec -it <name> bash`
+
+That'll give you a shell into the container so you can poke around and do
+whatever you like. Note, though, that if the buildslave daemon is killed it will
+likely kill the container and need to be re-run from the external command line.
+
 ## Recreating the "base AMI"
 
 All our build slaves run inside of a bare-bones AMI. It should be recreatable as
