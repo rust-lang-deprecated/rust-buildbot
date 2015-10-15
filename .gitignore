@@ -5,6 +5,10 @@ master/dist*
 master/try*
 master/snap3*
 master/gitpoller*
+master/beta*
+master/stable*
+master/cargo*
+master/tmp
 master/http.log
 master/master.cfg.txt
 master/master.cfg.sample
