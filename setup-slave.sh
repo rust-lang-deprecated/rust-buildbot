@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd `dirname $0`
+
 if [ "$1" = "--manual" ]
 then
 	echo "Enter slave name: "
