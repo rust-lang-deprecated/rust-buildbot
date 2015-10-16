@@ -20,7 +20,7 @@ RUN groupadd -r rustbuild && useradd -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 
 WORKDIR /build
-COPY build-gcc.sh build-musl.sh /build/
+COPY linux/build-gcc.sh linux/build-musl.sh /build/
 
 # Unfortunately on Ubuntu we can't install both gcc-multilib and all the cross
 # compilers we want, so we just build our own gcc with multilib and then
