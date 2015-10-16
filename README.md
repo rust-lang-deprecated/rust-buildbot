@@ -24,6 +24,8 @@ reboot using cron:
 > stunnel rust-buildbot-slave-stunnel-final.conf && buildslave restart slave
 ```
 
+There is more information on slave configuration in the file `slaves/README.md`
+
 # Running the Master
 
 ```
