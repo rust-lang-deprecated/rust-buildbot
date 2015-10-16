@@ -36,6 +36,7 @@ RUN apt-get install -y --force-yes \
         gcc-4.4-mipsel-linux-gnu
 ENV PATH=$PATH:/opt/gcc/bin
 ENV LD_LIBRARY_PATH=/opt/gcc/lib
+RUN ln -nsf gcc /opt/gcc/bin/cc
 
 # Install MUSL to support crossing to that target
 RUN sh build-musl.sh
