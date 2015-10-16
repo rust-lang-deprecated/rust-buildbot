@@ -44,5 +44,6 @@ RUN sh build-musl.sh
 # When running this container, startup buildbot
 USER rustbuild
 WORKDIR /buildslave
+RUN rm -rf /build
 COPY start-docker-slave.sh start-docker-slave.sh
 ENTRYPOINT ["sh", "start-docker-slave.sh"]
