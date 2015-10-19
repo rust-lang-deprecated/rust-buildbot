@@ -7,6 +7,6 @@ curl https://ftp.gnu.org/gnu/gcc/gcc-4.8.4/gcc-4.8.4.tar.bz2 | tar xjf -
 
 mkdir gcc-build
 cd gcc-build
-../gcc-4.8.4/configure --prefix=/opt/gcc --enable-languages=c,c++
+../gcc-4.8.4/configure --prefix=/opt/gcc --enable-languages=c,c++ --disable-multilib
 make -j10
 make install
