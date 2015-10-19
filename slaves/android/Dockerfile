@@ -15,7 +15,9 @@ RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 # Setup PATH to allow running android tools.
 ENV PATH=$PATH:/android/ndk-arm/bin:/android/ndk-aarch64/bin:/android/ndk-x86:/android/sdk/tools:/android/sdk/platform-tools
 
-WORKDIR /build
+WORKDIR /android
+RUN chown rustbuild:rustbuild /android
+USER rustbuild
 
 # Prep the Android NDK
 #
@@ -47,6 +49,7 @@ RUN bash android-ndk-r10e/build/tools/make-standalone-toolchain.sh \
         --install-dir=/android/ndk-x86_64 \
         --ndk-dir=/build/android-ndk-r10e \
         --arch=x86_64
+RUN rm -rf ./android-ndk-r10e-linux-x86_64.bin ./android-ndk-r10e
 
 # Prep the SDK and emulator
 #
@@ -56,8 +59,8 @@ RUN bash android-ndk-r10e/build/tools/make-standalone-toolchain.sh \
 # which apparently magically accepts the licenses.
 RUN curl -O http://dl.google.com/android/android-sdk_r24.3.4-linux.tgz
 RUN tar xf android-sdk_r24.3.4-linux.tgz
-COPY android/android-accept-licenses.sh /build/android-accept-licenses.sh
-RUN mv android-sdk-linux /android/sdk
+COPY android/android-accept-licenses.sh /android/android-accept-licenses.sh
+RUN mv android-sdk-linux sdk
 RUN ["./android-accept-licenses.sh", \
      "android - update sdk -a --no-ui --filter platform-tools,android-18,android-21,sys-img-x86-android-18,sys-img-x86_64-android-21,sys-img-armeabi-v7a-android-18"]
 RUN echo "no" | android create avd \
@@ -72,10 +75,9 @@ RUN echo "no" | android create avd \
                 --name x86_64-21 \
                 --target android-21 \
                 --abi x86_64
+RUN rm android-accept-licenses.sh
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
-RUN rm -rf /build
-USER rustbuild
 COPY start-docker-slave.sh start-docker-slave.sh
 ENTRYPOINT ["sh", "start-docker-slave.sh"]
