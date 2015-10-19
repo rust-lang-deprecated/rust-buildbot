@@ -76,7 +76,8 @@ RUN sh build_tar.sh
 RUN sh build_gdb.sh
 
 # Install buildbot and prep it to run
-RUN pip install buildbot-slave
+RUN curl https://bootstrap.pypa.io/ez_setup.py | python
+RUN easy_install buildbot-slave
 RUN groupadd -r rustbuild && useradd -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 
