@@ -115,6 +115,8 @@ master_addy 11.22.333.4444:5678
 git_source git://github.com/rust-lang/rust.git
 cargo_source git://github.com/rust-lang/cargo.git
 packaging_source git://github.com/rust-lang/rust-packaging.git
+buildbot_source https://github.com/rust-lang/rust-buildbot
+buildbot_branch master
 s3_addy s3://your-bucket-name-here
 s3_cargo_addy s3://your-other-bucket-name-here
 homu_secret RFqnZtXnRhD66qv11WOGIkuGn2YzvylOcxlqqXZmSq4RaLpXfb
@@ -127,6 +129,8 @@ dist_server_addy http://your-bucket-name.here.s3-website-aws-region.amazonaws.co
    which also appears in `~/rustbuild/homu/cfg.toml` under `repo.rust.buildbot`
    and `repo.cargo.buildbot`.
 * `dist_server_addy` is the url of that bucket where stuff gets uploaded
+* `buildbot_source` and `buildbot_branch` are the repo/branch to check out on
+  docker images when they boot up to start the slave.
 
 ## `master/slave-list.txt`
 
