@@ -21,3 +21,33 @@ CFLAGS=-D_FORTIFY_SOURCE=0 FORCE_UNSAFE_CONFIGURE=1 \
 make -j10
 make install
 yum erase -y tar
+
+# Apparently tar's configure script creates this massive directory tree if a
+# bunch of nested directories called 'confdir3'. This ends up thwarting rm -rf
+# once we try to blow this directory away, which is generally not cool, so we
+# use a small C program (shell doesn't work?) to just rename all confdir3
+# directories to 'a' so rm -rf will succeed (path name limits shouldn't be hit).
+cat > foo.c <<-EOF
+#include <string.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <assert.h>
+#include <unistd.h>
+
+int main() {
+        struct stat buf;
+
+        while (stat("confdir3", &buf) == 0) {
+                assert(chdir("confdir3") == 0);
+        }
+        assert(chdir("..") == 0);
+        while (stat("confdir3", &buf) == 0) {
+                assert(rename("confdir3", "a") == 0);
+                assert(chdir("..") == 0);
+        }
+        return 0;
+}
+EOF
+gcc foo.c
+./a.out

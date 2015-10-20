@@ -2,6 +2,7 @@
 
 set -ex
 
+yum install -y texinfo ncurses-devel
 curl https://ftp.gnu.org/gnu/gdb/gdb-7.9.1.tar.gz | tar xzf -
 mkdir gdb-build
 cd gdb-build

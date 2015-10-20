@@ -2,6 +2,7 @@
 
 set -ex
 
+yum install -y bzip2-devel
 curl https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz | tar xzf -
 mkdir python-build
 cd python-build
