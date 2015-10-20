@@ -38,13 +38,13 @@ $ buildbot start
 This requires some digging in `master.cfg`. If the new builder will be gated,
 you'll also have to add it in `/home/rustbuild/homu/cfg.toml`.
 
-* Choose the new builder's name. 
+* Choose the new builder's name.
 
     * If it runs tests with optimizations enabled, the name will contain
-      `-opt`. 
+      `-opt`.
 
     * If the tests are run without optimizations, the name should contain
-      `-nopt-t`. 
+      `-nopt-t`.
 
     * If you're toggling a new option, pick the unique string that represents
       the option at hand.
@@ -61,33 +61,33 @@ you'll also have to add it in `/home/rustbuild/homu/cfg.toml`.
 * Under the next `for p in auto_platforms`, set your new flag according to the
   value you read from the unique string in the previous step.
 
-Pull requests to simplify this workflow are welcome. 
+Pull requests to simplify this workflow are welcome.
 
 # It's broken!
 
 Sometimes the queue gets stuck. The most obvious symptom is if a PR takes
-substantially longer than usual to build. 
+substantially longer than usual to build.
 
-First, check Homu's queue [here](http://buildbot.rust-lang.org/homu/queue/rust). 
+First, check Homu's queue [here](http://buildbot.rust-lang.org/homu/queue/rust).
 If Homu hasn't seen the PR, one can repeat the `r+`. If that doesn't work,
-restart Homu on the buildmaster. 
+restart Homu on the buildmaster.
 
 If the PR is listed as "pending" in the Homu queue, check for pending jobs on
 [the grid](http://buildbot.rust-lang.org/grid?branch=auto&width=10). If there
 are no pending jobs in the grid, kick Homu by having someone with permissions
-on the repo say "@bors: retry force" on the PR that's stuck. 
+on the repo say "@bors: retry force" on the PR that's stuck.
 
 If the grid is aware of the jobs, check for lost buildslaves. When a builder
 gets lost, its name will be purple and its status will include "slave lost".
 This means that either the host needs to be booted or the buildbot process on
-it needs to be restarted. 
+it needs to be restarted.
 
 If the above steps fail, restart the Buildbot process on the production
 buildmaster.
 
 ## Homu is broken!
 
-If the Homu status page linked above won't load, something is wrong with Homu. 
+If the Homu status page linked above won't load, something is wrong with Homu.
 
 To start Homu, SSH into the buildmaster as root, then:
 
@@ -99,7 +99,7 @@ $ .venv/bin/python homu/main.py 2>&1 | tee homu.log
 ```
 
 Often attaching to the screen then killing Homu (ctrl+c) and rerunning the
-prior command (up-arrow, enter) is all this takes. 
+prior command (up-arrow, enter) is all this takes.
 
 # Testing Locally
 
@@ -107,7 +107,7 @@ prior command (up-arrow, enter) is all this takes.
 
 To do things with this Buildbot on your local machine, you'll need to create
 the file `master/master.cfg.txt`. `master.cfg` reads secrets out of it at
-startup. 
+startup.
 
 ```
 env prod
@@ -125,7 +125,7 @@ dist_server_addy http://your-bucket-name.here.s3-website-aws-region.amazonaws.co
 * `s3_addy` and `s3_cargo_addy` are buckets where artefacts will get uploaded
 * `homu_secret` is a string that you can get from `pwgen -s 64 -n 1` or so,
    which also appears in `~/rustbuild/homu/cfg.toml` under `repo.rust.buildbot`
-   and `repo.cargo.buildbot`. 
+   and `repo.cargo.buildbot`.
 * `dist_server_addy` is the url of that bucket where stuff gets uploaded
 
 ## `master/slave-list.txt`
