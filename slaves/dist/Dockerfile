@@ -11,7 +11,9 @@ WORKDIR /build
 # zlib-devel == needed by basically everyone
 # file == needed by the rust build
 # xz == needed to extract LLVM sources
-RUN yum install -y curl bzip2 gcc make glibc-devel perl zlib-devel file xz
+# which, stunnel == needed by rust-buildbot startup scripts
+RUN yum install -y curl bzip2 gcc make glibc-devel perl zlib-devel file xz \
+                   which stunnel
 
 ENV PATH=/rustroot/bin:/rust/bin:$PATH
 ENV LD_LIBRARY_PATH=/rustroot/lib64:/rustroot/lib
