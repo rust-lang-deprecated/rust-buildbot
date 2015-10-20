@@ -79,11 +79,6 @@ RUN sh build_gdb.sh && rm -rf /build
 COPY dist/build_git.sh /build/
 RUN sh build_git.sh && rm -rf /build
 
-# # We need pkg-config to identify a few
-# COPY dist/build_pkgconfig.sh /build/
-# RUN sh build_pkgconfig.sh
-# RUN rm -rf /rustroot/lib/pkgconfig
-
 # Install buildbot and prep it to run
 RUN curl https://bootstrap.pypa.io/ez_setup.py | python
 RUN easy_install buildbot-slave
