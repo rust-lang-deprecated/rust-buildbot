@@ -13,7 +13,7 @@ WORKDIR /build
 # xz == needed to extract LLVM sources
 # which, stunnel == needed by rust-buildbot startup scripts
 RUN yum install -y curl bzip2 gcc make glibc-devel perl zlib-devel file xz \
-                   which stunnel
+          which stunnel
 
 ENV PATH=/rustroot/bin:/rust/bin:$PATH
 ENV LD_LIBRARY_PATH=/rustroot/lib64:/rustroot/lib
@@ -37,11 +37,6 @@ RUN sh build_binutils.sh && rm -rf /build
 # ensure that we always use the ones that we just built.
 COPY dist/build_gcc.sh /build/
 RUN sh build_gcc.sh && rm -rf /build
-
-# The Rust test suite requires a relatively new version of gdb, much newer than
-# CentOS has to offer by default
-COPY dist/build_gdb.sh /build/
-RUN sh build_gdb.sh && rm -rf /build
 
 # libssh2 (a dependency of Cargo) requires cmake 2.8.11 or higher but CentOS
 # only has 2.6.4, so build our own
@@ -72,6 +67,12 @@ RUN sh build_curl.sh
 # CentOS 5.5 has Python 2.4 by default, but LLVM needs 2.7+
 COPY dist/build_python.sh /build/
 RUN sh build_python.sh && rm -rf /build
+
+# The Rust test suite requires a relatively new version of gdb, much newer than
+# CentOS has to offer by default, and we want it to use the newly installed
+# python so it's ordered here.
+COPY dist/build_gdb.sh /build/
+RUN sh build_gdb.sh && rm -rf /build
 
 # Apparently CentOS 5.5 desn't have `git` in yum, but we're gonna need it for
 # cloning, so download and build it here.
