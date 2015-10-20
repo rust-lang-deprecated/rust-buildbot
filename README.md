@@ -95,7 +95,7 @@ To start Homu, SSH into the buildmaster as root, then:
 # screen -R             # Or `screen -S homu` if there's no screen session
 # su rustbuild
 $ cd /home/rustbuild/homu
-$ .venv/bin/python homu/main.py 2>&1 | tee homu.log
+$ .venv/bin/python homu/main.py 2>&1 | tee -a homu.log
 ```
 
 Often attaching to the screen then killing Homu (ctrl+c) and rerunning the
