@@ -75,7 +75,7 @@ follows:
 4. Add the following to `crontab`:
 
     ```
-    @reboot sh -c 'sleep 20 && docker run `curl -s http://169.254.169.254/latest/user-data | tail -n +2 | head -n 1`' 2>&1 | logger
+    @reboot sh -c 'sleep 20 && docker run --privileged `curl -s http://169.254.169.254/latest/user-data | tail -n +2 | head -n 1`' 2>&1 | logger
     ```
 
    To break this down:
@@ -86,6 +86,7 @@ follows:
      it appear at `/var/log/messages`
    * `sleep 20` - wait for the docker daemon to start
    * `docker run ...` - run a docker image
+   * `--privileged` - needed for gdb tests to work (enables `ptrace` I believe)
    * `curl ... | tail | head` - the name of the docker image to run is in the
      "User Data" of the AMI when buildbot boots it, and this is what fetches it
      and parses it out.
