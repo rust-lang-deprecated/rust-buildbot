@@ -14,5 +14,4 @@ script:
   - mkdir $HOME/.ec2
   - echo "$AWS_ACCESS_KEY" >> $HOME/.ec2/aws_id
   - echo "$AWS_SECRET_KEY" >> $HOME/.ec2/aws_id
-  - cat $HOME/.ec2/aws_id
   - (cd master && buildbot checkconfig)
