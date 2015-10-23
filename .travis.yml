@@ -1,0 +1,18 @@
+language: generic
+sudo: required
+dist: trusty
+
+install:
+  - sudo apt-get update
+  - sudo apt-get install -y libffi-dev libssl-dev python-dev
+  - sudo pip install buildbot boto pyopenssl
+
+script:
+  - cp master/master.cfg.txt.sample master/master.cfg.txt
+  - cp master/slave-list.txt.sample master/slave-list.txt
+  - cp master/passwords.py.sample master/passwords.py
+  - mkdir $HOME/.ec2
+  - echo $AWS_ACCESS_KEY >> $HOME/.ec2/aws_id
+  - echo $AWS_SECRET_KEY >> $HOME/.ec2/aws_id
+  - cat $HOME/.ec2/aws_id
+  - (cd master && buildbot checkconfig)

@@ -1,0 +1,19 @@
+linux1 00000000000000000000     docker=alexcrichton/rust-slave-linux:2015-10-19b ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=3
+linux2 00000000000000000000     docker=alexcrichton/rust-slave-linux:2015-10-19b ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=3
+linux3 00000000000000000000     docker=alexcrichton/rust-slave-linux:2015-10-19b ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=3
+linux4 00000000000000000000     docker=alexcrichton/rust-slave-linux:2015-10-19b ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=3
+lincross1 00000000000000000000 docker=alexcrichton/rust-slave-linux-cross:2015-10-20 ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=4 dist=true
+linux-64-x-android-t 00000000000000000000  docker=alexcrichton/rust-slave-android:2015-10-19 ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=1 special=true
+dist-arm-android 00000000000000000000  docker=alexcrichton/rust-slave-android:2015-10-19 ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=3 special=true dist=true
+linux-snap 00000000000000000000 docker=alexcrichton/rust-slave-dist:2015-10-20b ami=ami-457cbc01 instance_type=c3.2xlarge max_builds=3 snap=true dist=true special=true
+win1 00000000000000000000       ami=ami-8743bdc3 instance_type=c3.2xlarge max_builds=3 snap=true
+win2 00000000000000000000       ami=ami-8743bdc3 instance_type=c3.2xlarge max_builds=3 snap=true
+windist1 00000000000000000000       ami=ami-8743bdc3 instance_type=c3.2xlarge max_builds=1 snap=true dist=true special=true
+windist2 00000000000000000000       ami=ami-8743bdc3 instance_type=c3.2xlarge max_builds=1 snap=true dist=true special=true
+
+bitrig1 asdf max_builds=2 snap=true
+freebsd10_32-1 asfd max_builds=2 snap=true
+freebsd10_64-1 asdf max_builds=2 snap=true
+dragonflybsd-64-opt asdf max_builds=2 snap=true
+openbsd-64-opt asdf max_builds=2 snap=true
+
