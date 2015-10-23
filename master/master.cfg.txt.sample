@@ -1,0 +1,11 @@
+env dev
+master_addy 1.1.1.1:9000
+git_source https://github.com/rust-lang/rust
+cargo_source https://github.com/rust-lang/cargo
+packaging_source https://github.com/rust-lang/rust-packaging
+buildbot_source https://github.com/rust-lang/rust-buildbot
+buildbot_branch master
+s3_addy s3://my-bucket
+s3_cargo_addy s3://my-bucket
+homu_secret my-secret
+dist_server_addy http://my-bucket.s3-website-us-west-1.amazonaws.com
