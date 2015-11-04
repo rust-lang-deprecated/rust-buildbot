@@ -101,6 +101,17 @@ $ .venv/bin/python homu/main.py 2>&1 | tee -a homu.log
 Often attaching to the screen then killing Homu (ctrl+c) and rerunning the
 prior command (up-arrow, enter) is all this takes.
 
+# The Dev Environment
+
+Consult the dev buildmaster's `master/passwords.py` for credentials, and log
+into the web interface (point your browser at the dev buildmaster's public IP,
+which is available from the AWS console) as `any-build`. 
+
+To trigger a full nightly build, append `/builders/nightly-dist-rustc-trigger`
+to the URL and force a build on the trigger builder. This will spin up the
+other builders and create a nightly, whose files will be uploaded to the
+`dev-static-rust-lang-org` s3 bucket at the end.
+
 # Testing Locally
 
 ## `master.cfg.txt`
