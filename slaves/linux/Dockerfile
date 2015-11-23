@@ -5,7 +5,8 @@ RUN apt-get update
 RUN apt-get install -y \
         curl make cmake xz-utils git \
         python-dev python-pip stunnel \
-        g++-multilib libssl-dev libssl-dev:i386 gdb
+        g++-multilib libssl-dev libssl-dev:i386 gdb \
+        valgrind
 
 # Install buildbot and prep it to run
 RUN pip install buildbot-slave
