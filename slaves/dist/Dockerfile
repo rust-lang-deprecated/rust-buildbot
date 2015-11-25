@@ -24,6 +24,22 @@ RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 RUN mkdir /home/rustbuild
 RUN chown rustbuild:rustbuild /home/rustbuild
 
+# We need a build of openssl which supports SNI to download artifacts from
+# static.rust-lang.org. This'll be used to link into libcurl below (and used
+# later as well), so build a copy of OpenSSL with dynamic libraries into our
+# generic root.
+COPY dist/build_openssl.sh /build/
+RUN sh build_openssl.sh && rm -rf /build
+
+# The `curl` binary on CentOS doesn't support SNI which is needed for fetching
+# some https urls we have, so install a new version of libcurl + curl which is
+# using the openssl we just built previously.
+#
+# Note that we also disable a bunch of optional features of curl that we don't
+# really need.
+COPY dist/build_curl.sh /build/
+RUN sh build_curl.sh
+
 # binutils < 2.22 has a bug where the 32-bit executables it generates
 # immediately segfault in Rust, so we need to install our own binutils.
 #
@@ -47,22 +63,6 @@ RUN sh build_cmake.sh && rm -rf /build
 # that the Rust build system passes it, so install a new version.
 COPY dist/build_tar.sh /build/
 RUN sh build_tar.sh && rm -rf /build
-
-# We need a build of openssl which supports SNI to download artifacts from
-# static.rust-lang.org. This'll be used to link into libcurl below (and used
-# later as well), so build a copy of OpenSSL with dynamic libraries into our
-# generic root.
-COPY dist/build_openssl.sh /build/
-RUN sh build_openssl.sh && rm -rf /build
-
-# The `curl` binary on CentOS doesn't support SNI which is needed for fetching
-# some https urls we have, so install a new version of libcurl + curl which is
-# using the openssl we just built previously.
-#
-# Note that we also disable a bunch of optional features of curl that we don't
-# really need.
-COPY dist/build_curl.sh /build/
-RUN sh build_curl.sh
 
 # CentOS 5.5 has Python 2.4 by default, but LLVM needs 2.7+
 COPY dist/build_python.sh /build/
