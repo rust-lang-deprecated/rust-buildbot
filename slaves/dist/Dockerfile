@@ -24,6 +24,13 @@ RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 RUN mkdir /home/rustbuild
 RUN chown rustbuild:rustbuild /home/rustbuild
 
+# Install gcc 4.7 which has C++11 support which is required by LLVM
+#
+# After we're done building we erase the binutils/gcc installs from CentOS to
+# ensure that we always use the ones that we just built.
+COPY dist/build_gcc.sh /build/
+RUN sh build_gcc.sh && rm -rf /build
+
 # We need a build of openssl which supports SNI to download artifacts from
 # static.rust-lang.org. This'll be used to link into libcurl below (and used
 # later as well), so build a copy of OpenSSL with dynamic libraries into our
@@ -39,13 +46,6 @@ RUN sh build_openssl.sh && rm -rf /build
 # really need.
 COPY dist/build_curl.sh /build/
 RUN sh build_curl.sh
-
-# Install gcc 4.7 which has C++11 support which is required by LLVM
-#
-# After we're done building we erase the binutils/gcc installs from CentOS to
-# ensure that we always use the ones that we just built.
-COPY dist/build_gcc.sh /build/
-RUN sh build_gcc.sh && rm -rf /build
 
 # binutils < 2.22 has a bug where the 32-bit executables it generates
 # immediately segfault in Rust, so we need to install our own binutils.
