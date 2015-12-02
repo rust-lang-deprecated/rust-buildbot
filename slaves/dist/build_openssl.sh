@@ -1,11 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
 set -ex
 
 VERSION=1.0.2d
+SHA256=671c36487785628a703374c652ad2cebea45fa920ae5681515df25d9f2c9a8c8
 
 yum install -y setarch
-curl http://openssl.org/source/openssl-$VERSION.tar.gz | tar xzf -
+curl http://openssl.org/source/openssl-$VERSION.tar.gz | \
+  tee >(sha256sum > openssl-$VERSION.tar.gz.sha256)    | tar xzf -
+test $SHA256 = $(cut -d ' ' -f 1 openssl-$VERSION.tar.gz.sha256) || exit 1
+
 cp -r openssl-$VERSION openssl-static-64
 cp -r openssl-$VERSION openssl-static-32
 cd openssl-$VERSION
