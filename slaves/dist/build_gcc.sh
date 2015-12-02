@@ -12,4 +12,4 @@ cd ../gcc-4.7.4-build
 make -j10
 make install
 ln -nsf gcc /rustroot/bin/cc
-yum erase -y gcc wget binutils
+yum erase -y gcc wget

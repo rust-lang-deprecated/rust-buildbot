@@ -24,29 +24,12 @@ RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 RUN mkdir /home/rustbuild
 RUN chown rustbuild:rustbuild /home/rustbuild
 
-# binutils < 2.22 has a bug where the 32-bit executables it generates
-# immediately segfault in Rust, so we need to install our own binutils.
-#
-# See https://github.com/rust-lang/rust/issues/20440 for more info
-COPY dist/build_binutils.sh /build/
-RUN sh build_binutils.sh && rm -rf /build
-
 # Install gcc 4.7 which has C++11 support which is required by LLVM
 #
 # After we're done building we erase the binutils/gcc installs from CentOS to
 # ensure that we always use the ones that we just built.
 COPY dist/build_gcc.sh /build/
 RUN sh build_gcc.sh && rm -rf /build
-
-# libssh2 (a dependency of Cargo) requires cmake 2.8.11 or higher but CentOS
-# only has 2.6.4, so build our own
-COPY dist/build_cmake.sh /build/
-RUN sh build_cmake.sh && rm -rf /build
-
-# tar on CentOS is too old as it doesn't understand the --exclude-vcs option
-# that the Rust build system passes it, so install a new version.
-COPY dist/build_tar.sh /build/
-RUN sh build_tar.sh && rm -rf /build
 
 # We need a build of openssl which supports SNI to download artifacts from
 # static.rust-lang.org. This'll be used to link into libcurl below (and used
@@ -63,6 +46,23 @@ RUN sh build_openssl.sh && rm -rf /build
 # really need.
 COPY dist/build_curl.sh /build/
 RUN sh build_curl.sh
+
+# binutils < 2.22 has a bug where the 32-bit executables it generates
+# immediately segfault in Rust, so we need to install our own binutils.
+#
+# See https://github.com/rust-lang/rust/issues/20440 for more info
+COPY dist/build_binutils.sh /build/
+RUN sh build_binutils.sh && rm -rf /build
+
+# libssh2 (a dependency of Cargo) requires cmake 2.8.11 or higher but CentOS
+# only has 2.6.4, so build our own
+COPY dist/build_cmake.sh /build/
+RUN sh build_cmake.sh && rm -rf /build
+
+# tar on CentOS is too old as it doesn't understand the --exclude-vcs option
+# that the Rust build system passes it, so install a new version.
+COPY dist/build_tar.sh /build/
+RUN sh build_tar.sh && rm -rf /build
 
 # CentOS 5.5 has Python 2.4 by default, but LLVM needs 2.7+
 COPY dist/build_python.sh /build/

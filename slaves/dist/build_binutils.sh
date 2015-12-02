@@ -8,3 +8,4 @@ cd binutils-build
 ../binutils-2.25.1/configure --prefix=/rustroot
 make -j10
 make install
+yum erase -y binutils
