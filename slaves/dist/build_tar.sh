@@ -1,8 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 set -ex
 
-curl https://ftp.gnu.org/gnu/tar/tar-1.28.tar.bz2 | tar xjf -
+VERSION=1.28
+SHA256=60e4bfe0602fef34cd908d91cf638e17eeb09394d7b98c2487217dc4d3147562
+
+curl https://ftp.gnu.org/gnu/tar/tar-$VERSION.tar.bz2 | \
+  tee >(sha256sum > tar-$VERSION.tar.bz2.sha256)      | tar xjf -
+test $SHA256 = $(cut -d ' ' -f 1 tar-$VERSION.tar.bz2.sha256) || exit 1
+
 mkdir tar-build
 cd tar-build
 
@@ -16,7 +22,7 @@ cd tar-build
 # requires us to do that if we're running as root (which we are). Trust me
 # though, "I got this".
 CFLAGS=-D_FORTIFY_SOURCE=0 FORCE_UNSAFE_CONFIGURE=1 \
-    ../tar-1.28/configure --prefix=/rustroot
+    ../tar-$VERSION/configure --prefix=/rustroot
 
 make -j10
 make install
