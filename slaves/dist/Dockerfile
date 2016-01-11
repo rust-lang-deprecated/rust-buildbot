@@ -80,8 +80,8 @@ COPY dist/build_git.sh /build/
 RUN /bin/bash build_git.sh && rm -rf /build
 
 # Install buildbot and prep it to run
-RUN curl https://bootstrap.pypa.io/ez_setup.py | python
-RUN easy_install buildbot-slave
+RUN curl https://bootstrap.pypa.io/get-pip.py | python
+RUN pip install buildbot-slave
 
 # Clean up after ourselves, make sure that `cc` is a thing, and then make the
 # default working directory a "home-ish" directory
