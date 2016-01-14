@@ -66,16 +66,30 @@ Pull requests to simplify this workflow are welcome.
 # It's broken!
 
 Sometimes the queue gets stuck. The most obvious symptom is if a PR takes
-substantially longer than usual to build.
+substantially longer than usual to build. 
 
-First, check Homu's queue [here](http://buildbot.rust-lang.org/homu/queue/rust).
-If Homu hasn't seen the PR, one can repeat the `r+`. If that doesn't work,
-restart Homu on the buildmaster.
+1) Does Homu know about the PR?
+
+See whether the PR shows up in [Homu's queue](http://buildbot.rust-lang.org/homu/queue/rust).
+
+If the PR is missing from the queue, one can repeat the `r+`. If that doesn't 
+make it show up after a few minutes, restart Homu on the buildmaster.
+
+2) Did Homu tell Buildbot about the PR?
 
 If the PR is listed as "pending" in the Homu queue, check for pending jobs on
-[the grid](http://buildbot.rust-lang.org/grid?branch=auto&width=10). If there
-are no pending jobs in the grid, kick Homu by having someone with permissions
-on the repo say "@bors: retry force" on the PR that's stuck.
+[the grid](http://buildbot.rust-lang.org/grid?branch=auto&width=10). 
+
+If there are no pending jobs in the grid, have Homu repeat the request to 
+Buildbot by having someone with the right permissions say `@bors: retry force` 
+on the PR that's stuck.
+
+Occasionally, a try build on which `retry force` didn't work will succeed after 
+[resetting state](https://github.com/rust-lang/rust/pull/30845#issuecomment-171712657) 
+and bumping the priority with a comment like `@bors r- try- r=nmatsakis 
+retry force p=1 abc123`
+
+3) Is Buildbot running the PR?
 
 If the grid is aware of the jobs, check for lost buildslaves. When a builder
 gets lost, its name will be purple and its status will include "slave lost".
@@ -85,7 +99,7 @@ it needs to be restarted.
 If the above steps fail, restart the Buildbot process on the production
 buildmaster.
 
-## Homu is broken!
+## Homu is dead!
 
 If the Homu status page linked above won't load, something is wrong with Homu.
 
