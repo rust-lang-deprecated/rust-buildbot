@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=1.0.2e
-SHA256=e23ccafdb75cfcde782da0151731aa2185195ac745eea3846133f2e05c0e0bff
+VERSION=1.0.2f
+SHA256=932b4ee4def2b434f85435d9e3e19ca8ba99ce9a065a61524b429a9d5e9b2e9c
 
 yum install -y setarch
 curl http://openssl.org/source/openssl-$VERSION.tar.gz | \
