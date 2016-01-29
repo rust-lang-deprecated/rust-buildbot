@@ -10,6 +10,7 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         gcc-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
         gcc-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
         gcc-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
+        lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
         software-properties-common
 RUN add-apt-repository ppa:angelsl/mips-cross && apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
@@ -29,11 +30,8 @@ RUN                                              \
 
 # Install rumprun cross compiler
 WORKDIR /build
-RUN git clone --recursive http://repo.rumpkernel.org/rumprun
-WORKDIR /build/rumprun
-RUN CC=cc ./build-rr.sh hw
-
-ENV PATH=$PATH:/build/rumprun/rumprun/bin
+COPY linux-cross/build_rumprun.sh /build/
+RUN /bin/bash build_rumprun.sh && rm -rf /build
 
 # Install buildbot and prep it to run
 RUN pip install buildbot-slave
