@@ -18,4 +18,4 @@ dragonflybsd-64-opt asdf max_builds=2 snap=true
 openbsd-64-opt asdf max_builds=2 snap=true
 
 mac1 asdf max_builds=2 snap=true dist=true
-mac2 asdf max_builds=2 snap=true dist=true
+mac2 asdf max_builds=2 snap=true dist=true ios=true
