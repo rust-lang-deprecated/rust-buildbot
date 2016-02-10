@@ -32,3 +32,6 @@ make install
 ln -nsf /rustroot/cargo32 /home/rustbuild/root32
 ln -nsf /rustroot/cargo64 /home/rustbuild/root64
 yum erase -y setarch
+
+# Make the system cert collection available to the new install.
+ln -nsf /etc/pki/tls/cert.pem /rustroot/ssl/
