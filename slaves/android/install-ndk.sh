@@ -11,7 +11,7 @@ chmod +x android-ndk-r10e-linux-x86_64.bin
 bash android-ndk-r10e/build/tools/make-standalone-toolchain.sh \
         --platform=android-18 \
         --toolchain=arm-linux-androideabi-4.8 \
-        --install-dir=/android/ndk-arm-21 \
+        --install-dir=/android/ndk-arm-18 \
         --ndk-dir=/android/android-ndk-r10e \
         --arch=arm
 bash android-ndk-r10e/build/tools/make-standalone-toolchain.sh \
