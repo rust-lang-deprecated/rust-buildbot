@@ -13,13 +13,20 @@ mkdir sdk
 curl http://dl.google.com/android/android-sdk_r24.4-linux.tgz | \
     tar xzf - -C sdk --strip-components=1
 
-filter="platform-tools,android-21"
+filter="platform-tools,android-18,android-21"
+filter="$filter,sys-img-x86-android-18"
+filter="$filter,sys-img-x86_64-android-18"
+filter="$filter,sys-img-armeabi-v7a-android-18"
 filter="$filter,sys-img-x86-android-21"
 filter="$filter,sys-img-x86_64-android-21"
 filter="$filter,sys-img-armeabi-v7a-android-21"
 
 ./accept-licenses.sh "android - update sdk -a --no-ui --filter $filter"
 
+echo "no" | android create avd \
+                --name arm-18 \
+                --target android-18 \
+                --abi armeabi-v7a
 echo "no" | android create avd \
                 --name arm-21 \
                 --target android-21 \
