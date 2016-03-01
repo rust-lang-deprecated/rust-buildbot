@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=2.5.3
-SHA256=ebf3fb0f3f286d5f193efeca88e34c40a3cb53c985a1f53de0dbf08c3e5af979
+VERSION=2.7.2
+SHA256=58959e3ef3046403216a157dfc683c4d7f0dd83365463b8dd87063ded940a0df
 
 yum install -y gettext autoconf
 curl https://www.kernel.org/pub/software/scm/git/git-$VERSION.tar.gz | \
