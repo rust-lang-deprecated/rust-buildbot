@@ -33,21 +33,21 @@ public_addy = sys.argv[4]
 
 # The directory containing the 'rust' packages as output
 # by rust-packaging. These have been previously generated
-# by rust-buildbot, but not yet uploaded to s3
+# by rust-buildbot, but not yet uploaded to s3.
+#
+# This is also the directory we'll write the manifest to,
+# or in the case of stable, two manifests.
 rust_package_dir = sys.argv[5]
 
 # Temporary work directory
 temp_dir = sys.argv[6]
-
-# The file to write the manifest to
-out = sys.argv[7]
 
 print "channel: " + channel
 print "today: " + today
 print "s3_addy: " + s3_addy
 print "public_addy: " + public_addy
 print "rust_package_dir: " + rust_package_dir
-print "out: " + out
+print "temp_dir: " + temp_dir
 print
 
 # These are the platforms we produce compilers for
@@ -247,7 +247,16 @@ def generate_manifest(rustc_date, rustc_version, rustc_short_version,
     m = build_manifest(rustc_date, rustc_version, rustc_short_version,
                        cargo_date, cargo_version, cargo_short_version)
 
-    write_manifest(m)
+    manifest_name = "channel-rust-" + channel + ".toml"
+    manifest_file = rust_package_dir + "/" + manifest_name
+    write_manifest(m, manifest_file)
+
+    # Stable releases get a permanent manifest named after the version
+    if channel == "stable":
+        manifest_name = "channel-rust-" + rustc_short_version + ".toml"
+        manifest_file = rust_package_dir + "/" + manifest_name
+        write_manifest(m, manifest_file)
+
     print_summary(m)
 
 def build_manifest(rustc_date, rustc_version, rustc_short_version,
@@ -441,8 +450,8 @@ def url_and_hash_of_rust_package(target, rustc_short_version):
         "hash": hash,
     }
 
-def write_manifest(manifest):
-    with open(out, "w") as f:
+def write_manifest(manifest, file_path):
+    with open(file_path, "w") as f:
         f.write('manifest-version = "2"\n')
         f.write('date = "' + today + '"\n')
         f.write('\n')
