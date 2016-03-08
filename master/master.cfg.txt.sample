@@ -9,3 +9,4 @@ s3_addy s3://my-bucket
 s3_cargo_addy s3://my-bucket
 homu_secret my-secret
 dist_server_addy http://my-bucket.s3-website-us-west-1.amazonaws.com
+public_dist_server_addy http://dev-static.rust-lang.org
