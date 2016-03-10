@@ -5,8 +5,6 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         curl make git wget file \
         python-dev python-pip stunnel \
         g++ gcc libc6-dev \
-        gcc-4.7-arm-linux-gnueabi libc6-dev-armel-cross \
-        gcc-4.7-arm-linux-gnueabihf libc6-dev-armhf-cross \
         gcc-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
         gcc-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
         gcc-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
@@ -37,6 +35,30 @@ RUN /bin/bash build_rumprun.sh && rm -rf /build
 RUN pip install buildbot-slave
 RUN groupadd -r rustbuild && useradd -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
+
+# Install arm cross compiler
+WORKDIR /build
+COPY linux-cross/build_arm_toolchain_root.sh /build/
+RUN /bin/bash build_arm_toolchain_root.sh && chown rustbuild:rustbuild /build
+RUN mkdir /x-tools && chown rustbuild:rustbuild /x-tools
+COPY linux-cross/build_arm_toolchain.sh /build/
+COPY linux-cross/arm-linux-gnueabi.config /build/
+COPY linux-cross/arm-linux-gnueabihf.config /build/
+USER rustbuild
+RUN /bin/bash build_arm_toolchain.sh arm-linux-gnueabi
+RUN /bin/bash build_arm_toolchain.sh arm-linux-gnueabihf
+USER root
+RUN rm -rf /build
+
+RUN                                               \
+  for f in `ls /x-tools/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-*`; do     \
+    g=`basename $f`;  \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
+  done &&                                        \
+  for f in `ls /x-tools/arm-unknown-linux-gnueabihf/bin/arm-unknown-linux-gnueabihf-*`; do     \
+    g=`basename $f`;  \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
+  done
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
