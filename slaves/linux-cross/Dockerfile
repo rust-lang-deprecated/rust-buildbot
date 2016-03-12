@@ -37,16 +37,22 @@ RUN groupadd -r rustbuild && useradd -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 
 # Install arm cross compiler
+# NOTE crosstool-ng can't be executed by root so we execute it under the rustbuild user. /x-tools
+# is the crosstool-ng output directory and /build is the crosstool-ng build directory so both must
+# be writable by rustbuild
 WORKDIR /build
 COPY linux-cross/build_toolchain_root.sh /build/
-RUN /bin/bash build_toolchain_root.sh && chown rustbuild:rustbuild /build
-RUN mkdir /x-tools && chown rustbuild:rustbuild /x-tools
-COPY linux-cross/build_toolchain.sh /build/
-COPY linux-cross/arm-linux-gnueabi.config /build/
-COPY linux-cross/arm-linux-gnueabihf.config /build/
+RUN /bin/bash build_toolchain_root.sh && \
+    mkdir /x-tools && \
+    chown rustbuild:rustbuild /build && \
+    chown rustbuild:rustbuild /x-tools
+COPY linux-cross/build_toolchain.sh \
+    linux-cross/arm-linux-gnueabi.config \
+    linux-cross/arm-linux-gnueabihf.config \
+    /build/
 USER rustbuild
-RUN /bin/bash build_toolchain.sh arm-linux-gnueabi
-RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
+RUN /bin/bash build_toolchain.sh arm-linux-gnueabi && \
+    /bin/bash build_toolchain.sh arm-linux-gnueabihf
 USER root
 RUN rm -rf /build
 
