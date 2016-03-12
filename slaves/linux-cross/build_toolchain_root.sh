@@ -4,8 +4,8 @@ set -ex
 
 install_deps() {
   apt-get install -y --force-yes --no-install-recommends \
-    automake bison bzip2 curl flex g++ gawk gperf help2man libncurses-dev libtool-bin make texinfo \
-    patch wget
+    automake bison bzip2 ca-certificates curl flex g++ gawk gperf help2man libncurses-dev \
+    libtool-bin make texinfo patch wget
 }
 
 # gcc-4.8 can't be built with the make-4 that's ships with Ubuntu 15.10. This overrides it with
