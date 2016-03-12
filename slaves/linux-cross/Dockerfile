@@ -38,15 +38,15 @@ RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 
 # Install arm cross compiler
 WORKDIR /build
-COPY linux-cross/build_arm_toolchain_root.sh /build/
-RUN /bin/bash build_arm_toolchain_root.sh && chown rustbuild:rustbuild /build
+COPY linux-cross/build_toolchain_root.sh /build/
+RUN /bin/bash build_toolchain_root.sh && chown rustbuild:rustbuild /build
 RUN mkdir /x-tools && chown rustbuild:rustbuild /x-tools
-COPY linux-cross/build_arm_toolchain.sh /build/
+COPY linux-cross/build_toolchain.sh /build/
 COPY linux-cross/arm-linux-gnueabi.config /build/
 COPY linux-cross/arm-linux-gnueabihf.config /build/
 USER rustbuild
-RUN /bin/bash build_arm_toolchain.sh arm-linux-gnueabi
-RUN /bin/bash build_arm_toolchain.sh arm-linux-gnueabihf
+RUN /bin/bash build_toolchain.sh arm-linux-gnueabi
+RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
 USER root
 RUN rm -rf /build
 
