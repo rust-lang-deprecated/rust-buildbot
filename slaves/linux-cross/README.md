@@ -74,7 +74,7 @@ For targets: `arm-unknown-linux-gnueabi`
 
 - Path and misc options > Prefix directory = /x-tools/${CT_TARGET}
 - Target options > Target Architecture = arm
-- Target options > Architecture level = armv5t -- (*)
+- Target options > Architecture level = armv6 -- (+)
 - Target options > Floating point = software (no FPU) -- (*)
 - Operating System > Target OS = linux
 - Operating System > Linux kernel version = 3.2.72 -- Precise kernel
@@ -88,7 +88,7 @@ For targets: `arm-unknown-linux-gnueabihf`, `armv7-unknown-linux-gnueabihf`
 
 - Path and misc options > Prefix directory = /x-tools/${CT_TARGET}
 - Target options > Target Architecture = arm
-- Target options > Architecture level = armv7-a -- (*)
+- Target options > Architecture level = armv6 -- (+)
 - Target options > Use specific FPU = vfpv3-d16 -- (*)
 - Target options > Floating point = hardware (FPU) -- (*)
 - Target options > Default instruction set mode (thumb) -- (*)
@@ -100,3 +100,5 @@ For targets: `arm-unknown-linux-gnueabihf`, `armv7-unknown-linux-gnueabihf`
 
 (*) These options have been selected to match the configuration of the arm toolchains shipped with
 Ubuntu 15.10
+(+) These options have been selected to match the gcc flags we use to compile C libraries like
+jemalloc. See the mk/cfg/arm-uknown-linux-gnueabi{,hf}.mk file in Rust's source code.
