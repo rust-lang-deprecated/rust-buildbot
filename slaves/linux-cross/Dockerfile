@@ -51,8 +51,8 @@ COPY linux-cross/build_toolchain.sh \
     linux-cross/arm-linux-gnueabihf.config \
     /build/
 USER rustbuild
-RUN /bin/bash build_toolchain.sh arm-linux-gnueabi && \
-    /bin/bash build_toolchain.sh arm-linux-gnueabihf
+RUN /bin/bash build_toolchain.sh arm-linux-gnueabi
+RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
 USER root
 RUN rm -rf /build
 
