@@ -89,9 +89,9 @@ For targets: `arm-unknown-linux-gnueabihf`, `armv7-unknown-linux-gnueabihf`
 - Path and misc options > Prefix directory = /x-tools/${CT_TARGET}
 - Target options > Target Architecture = arm
 - Target options > Architecture level = armv6 -- (+)
-- Target options > Use specific FPU = vfpv3-d16 -- (*)
+- Target options > Use specific FPU = vfp -- (+)
 - Target options > Floating point = hardware (FPU) -- (*)
-- Target options > Default instruction set mode (thumb) -- (*)
+- Target options > Default instruction set mode = arm -- (+)
 - Operating System > Target OS = linux
 - Operating System > Linux kernel version = 3.2.72 -- Precise kernel
 - C-library > glibc version = 2.14.1
