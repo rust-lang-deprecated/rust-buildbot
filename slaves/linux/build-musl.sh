@@ -2,6 +2,8 @@
 
 set -ex
 
+export CFLAGS=-fPIC
+
 # Support building MUSL
 curl http://www.musl-libc.org/releases/musl-1.1.11.tar.gz | tar xzf -
 cd musl-1.1.11
