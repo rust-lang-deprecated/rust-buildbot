@@ -91,7 +91,7 @@ For targets: `arm-unknown-linux-gnueabi`
 
 ## `arm-linux-gnueabihf.config`
 
-For targets: `arm-unknown-linux-gnueabihf`, `armv7-unknown-linux-gnueabihf`
+For targets: `arm-unknown-linux-gnueabihf`
 
 - Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
 - Target options > Target Architecture = arm
@@ -105,10 +105,27 @@ For targets: `arm-unknown-linux-gnueabihf`, `armv7-unknown-linux-gnueabihf`
 - C compiler > gcc version = 4.9.3
 - C compiler > C++ = ENABLE -- to cross compile LLVM
 
+## `armv7-linux-gnueabihf.config`
+
+For targets: `armv7-unknown-linux-gnueabihf`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = arm
+- Target options > Suffix to the arch-part = v7
+- Target options > Architecture level = armv7-a -- (+)
+- Target options > Use specific FPU = vfpv3-d16 -- (\*)
+- Target options > Floating point = hardware (FPU) -- (\*)
+- Target options > Default instruction set mode = thumb -- (\*)
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.2.72 -- Precise kernel
+- C-library > glibc version = 2.14.1
+- C compiler > gcc version = 4.9.3
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
 (\*) These options have been selected to match the configuration of the arm
       toolchains shipped with Ubuntu 15.10
 (+) These options have been selected to match the gcc flags we use to compile C
-    libraries like jemalloc. See the mk/cfg/arm-uknown-linux-gnueabi{,hf}.mk
+    libraries like jemalloc. See the mk/cfg/arm(v7)-uknown-linux-gnueabi{,hf}.mk
     file in Rust's source code.
 
 ## `mips-linux-musl.config`

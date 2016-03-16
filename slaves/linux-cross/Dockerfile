@@ -2,7 +2,7 @@ FROM ubuntu:15.10
 
 RUN apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
-        curl make git wget file \
+        curl make cmake git wget file \
         python-dev python-pip stunnel \
         g++ gcc libc6-dev \
         gcc-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
@@ -35,7 +35,7 @@ RUN /bin/bash build_rumprun.sh && rm -rf /build
 
 # Install buildbot and prep it to run
 RUN pip install buildbot-slave
-RUN groupadd -r rustbuild && useradd -r -g rustbuild rustbuild
+RUN groupadd -r rustbuild && useradd -m -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 
 # Build/install crosstool-ng cross compilers
@@ -53,6 +53,7 @@ COPY linux-cross/build_toolchain.sh \
     linux-cross/arm-linux-gnueabihf.config \
     linux-cross/mips-linux-musl.config \
     linux-cross/mipsel-linux-musl.config \
+    linux-cross/armv7-linux-gnueabihf.config \
     /build/
 USER rustbuild
 
@@ -79,6 +80,8 @@ RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
 RUN /bin/bash build_toolchain.sh mips-linux-musl
 RUN /bin/bash build_toolchain.sh mipsel-linux-musl
 
+RUN /bin/bash build_toolchain.sh armv7-linux-gnueabihf
+
 USER root
 RUN rm -rf /build
 
@@ -101,7 +104,17 @@ RUN                                               \
   for f in `ls /x-tools/mipsel-unknown-linux-musl/bin/mipsel-unknown-linux-musl-*`; do     \
     g=`basename $f`;  \
     ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
+  done &&                                        \
+  for f in `ls /x-tools/armv7-unknown-linux-gnueabihf/bin/armv7-unknown-linux-gnueabihf-*`; do     \
+    g=`basename $f`;  \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
   done
+
+# Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the default
+# arm-linux-gnueabihf one
+ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
+  CC_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-gcc \
+  CXX_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-g++
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
