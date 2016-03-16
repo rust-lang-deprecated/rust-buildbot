@@ -36,7 +36,7 @@ RUN pip install buildbot-slave
 RUN groupadd -r rustbuild && useradd -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
 
-# Install arm cross compiler
+# Build/install crosstool-ng cross compilers
 # NOTE crosstool-ng can't be executed by root so we execute it under the
 # rustbuild user. /x-tools is the crosstool-ng output directory and /build is
 # the crosstool-ng build directory so both must be writable by rustbuild
@@ -49,10 +49,14 @@ RUN /bin/bash build_toolchain_root.sh && \
 COPY linux-cross/build_toolchain.sh \
     linux-cross/arm-linux-gnueabi.config \
     linux-cross/arm-linux-gnueabihf.config \
+    linux-cross/mips-linux-musl.config \
+    linux-cross/mipsel-linux-musl.config \
     /build/
 USER rustbuild
 RUN /bin/bash build_toolchain.sh arm-linux-gnueabi
 RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
+RUN /bin/bash build_toolchain.sh mips-linux-musl
+RUN /bin/bash build_toolchain.sh mipsel-linux-musl
 USER root
 RUN rm -rf /build
 
@@ -62,6 +66,14 @@ RUN                                               \
     ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
   done &&                                        \
   for f in `ls /x-tools/arm-unknown-linux-gnueabihf/bin/arm-unknown-linux-gnueabihf-*`; do     \
+    g=`basename $f`;  \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
+  done &&                                        \
+  for f in `ls /x-tools/mips-unknown-linux-musl/bin/mips-unknown-linux-musl-*`; do     \
+    g=`basename $f`;  \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
+  done &&                                        \
+  for f in `ls /x-tools/mipsel-unknown-linux-musl/bin/mipsel-unknown-linux-musl-*`; do     \
     g=`basename $f`;  \
     ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
   done

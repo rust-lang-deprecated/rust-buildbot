@@ -110,3 +110,38 @@ For targets: `arm-unknown-linux-gnueabihf`, `armv7-unknown-linux-gnueabihf`
 (+) These options have been selected to match the gcc flags we use to compile C
     libraries like jemalloc. See the mk/cfg/arm-uknown-linux-gnueabi{,hf}.mk
     file in Rust's source code.
+
+## `mips-linux-musl.config`
+
+For targets: `mips-unknown-linux-musl`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = mips
+- Target options > Endianness = **Big** endian
+- Target options > Architecture level = mips32r2 -- (+)
+- Target options > Floating point = software (no FPU) -- (+)
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 4.3 -- OpenWRT trunk uses 4.4 though
+- C-library > C library = musl
+- C-library > musl version = 1.0.5 -- OpenWRT trunk uses 1.1.14 though
+- C compiler > gcc version = 5.2
+- C compiler > C++ = ENABLE -- compiler-rt demands a C++ compiler even when we don't use it
+
+## `mipsel-linux-musl.config`
+
+For targets: `mipsel-unknown-linux-musl`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = mips
+- Target options > Endianness = **Little** endian
+- Target options > Architecture level = mips32 -- (+)
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 4.3 -- OpenWRT trunk uses 4.4 though
+- C-library > C library = musl
+- C-library > musl version = 1.0.5 -- OpenWRT trunk uses 1.1.14 though
+- C compiler > gcc version = 5.2
+- C compiler > C++ = ENABLE -- compiler-rt demands a C++ compiler even when we don't use it
+
+(+) These options have been selected to match the gcc flags we use to compile C
+    libraries like jemalloc. See the mk/cfg/mips(el)-uknown-linux-musl.mk
+    file in Rust's source code.
