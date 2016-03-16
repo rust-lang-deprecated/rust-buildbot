@@ -311,7 +311,7 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
         # All std are extensions
         for target in target_list:
             # host std is required though
-            if target == host: pass
+            if target == host: continue
 
             extensions += [{
                 "pkg": "rust-std",
