@@ -80,6 +80,19 @@ RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
 RUN /bin/bash build_toolchain.sh mips-linux-musl
 RUN /bin/bash build_toolchain.sh mipsel-linux-musl
 
+# Also build a toolchain tuned for the armv7 architecture which is going to be
+# used with the armv7-unknown-linux-gnueabihf target.
+#
+# Why are we not using the arm-linux-gnueabihf toolchain with the armv7 target?
+# We actually tried that setup but we hit `ar` errors caused by the different
+# codegen options used by crosstool-ng and the rust build system. crosstool-ng
+# uses `-march=armv6` to build the toolchain and related C(++) libraries, like
+# libstdc++ which gets statically linked to LLVM; on the other hand the rust
+# build system builds its C(++) libraries, like LLVM, with `-march=armv7-a`.
+#
+# By using this armv7 compiler we can ensure the same codegen options are used
+# everywhere and avoid these codegen mismatch issues. Also compiling libstdc++
+# for armv7 instead of for armv6 should make rustc (slightly) faster.
 RUN /bin/bash build_toolchain.sh armv7-linux-gnueabihf
 
 USER root
