@@ -15,6 +15,8 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         gcc-5-mips-linux-gnu libc6-dev-mips-cross \
         gcc-5-mipsel-linux-gnu libc6-dev-mipsel-cross
 
+# Rename compilers to variants without version numbers so the build
+# configuration in the standard library can pick them up.
 RUN                                              \
   for f in `ls /usr/bin/mips*-linux-*-*-5`; do   \
     ln -vs $f `echo $f | sed -e 's/-5$//'`;      \
@@ -53,13 +55,36 @@ COPY linux-cross/build_toolchain.sh \
     linux-cross/mipsel-linux-musl.config \
     /build/
 USER rustbuild
+
+# Build two full toolchains for the `arm-unknown-linux-gneuabi` and
+# `arm-unknown-linux-gnueabihf` targets. We build toolchains from scratch to
+# primarily move to an older glibc. Ubuntu does indeed have these toolchains in
+# its repositories (so we could install that package), but they package a
+# relatively newer version of glibc. In order for the binaries we produce to be
+# maximall compatible, we push the glibc version back to 2.14
 RUN /bin/bash build_toolchain.sh arm-linux-gnueabi
 RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
+
+# Also build two full toolchains for the `{mips,mipsel}-unknown-linux-musl`
+# targets. Currently these are essentially aliases to run on OpenWRT devices and
+# are different from the x86_64/i686 MUSL targets in that MUSL is dynamically
+# linked instead of statically. As a result, we also need to dynamically link to
+# an unwinder and other various runtime bits.
+#
+# We in theory could *only* build the MUSL library itself and use the standard
+# MIPS toolchains installed above to link against the library, except it gets
+# difficult figuring out how to link, for example, `gcc_s` dynamically. For that
+# reason we just give up and build a whole toolchain which is dedicated to
+# targeting this triple.
 RUN /bin/bash build_toolchain.sh mips-linux-musl
 RUN /bin/bash build_toolchain.sh mipsel-linux-musl
+
 USER root
 RUN rm -rf /build
 
+# Rename all the compilers we just built into /usr/bin and also without
+# `-unknown-` in the name because it appears lots of other compilers in Ubuntu
+# don't have this name in the component by default either.
 RUN                                               \
   for f in `ls /x-tools/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-*`; do     \
     g=`basename $f`;  \
