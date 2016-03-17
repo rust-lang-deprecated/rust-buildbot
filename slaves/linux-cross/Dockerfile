@@ -122,7 +122,13 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     CXX_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-g++ \
     AR_x86_64_unknown_netbsd=x86_64-unknown-netbsd-ar \
     CC_x86_64_unknown_netbsd=x86_64-unknown-netbsd-gcc \
-    CXX_x86_64_unknown_netbsd=x86_64-unknown-netbsd-g++
+    CXX_x86_64_unknown_netbsd=x86_64-unknown-netbsd-g++ \
+    AR_mips_unknown_linux_musl=mips-linux-musl-ar \
+    CC_mips_unknown_linux_musl=mips-linux-musl-gcc \
+    CXX_mips_unknown_linux_musl=mips-linux-musl-g++ \
+    AR_mipsel_unknown_linux_musl=mipsel-linux-musl-ar \
+    CC_mipsel_unknown_linux_musl=mipsel-linux-musl-gcc \
+    CXX_mipsel_unknown_linux_musl=mipsel-linux-musl-g++
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
