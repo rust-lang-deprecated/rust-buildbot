@@ -8,7 +8,7 @@ export CFLAGS=-fPIC
 curl http://www.musl-libc.org/releases/musl-1.1.11.tar.gz | tar xzf -
 cd musl-1.1.11
 # for x86_64
-./configure --prefix=/musl --disable-shared
+./configure --prefix=/musl-x86_64 --disable-shared
 make -j10
 make install
 make clean
@@ -28,7 +28,7 @@ cd libunwind-build
 cmake ../libunwind-3.7.0.src -DLLVM_PATH=/build/llvm-3.7.0.src \
           -DLIBUNWIND_ENABLE_SHARED=0
 make -j10
-cp lib/libunwind.a /musl/lib
+cp lib/libunwind.a /musl-x86_64/lib
 
 # (Note: the next cmake call doesn't fully override the previous cached one, so remove the cached
 # configuration manually)
