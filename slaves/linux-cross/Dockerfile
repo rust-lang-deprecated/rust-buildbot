@@ -4,6 +4,7 @@ RUN apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
         curl make cmake git wget file \
         python-dev python-pip stunnel \
+        bzip2 xz-utils \
         g++ gcc libc6-dev \
         gcc-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
         gcc-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
@@ -106,11 +107,22 @@ RUN                                                                           \
     ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;                     \
   done
 
-# Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the default
-# arm-linux-gnueabihf one
+COPY linux-cross/build_freebsd_toolchain.sh /tmp/
+RUN bash /tmp/build_freebsd_toolchain.sh
+COPY linux-cross/build_netbsd_toolchain.sh /tmp/
+RUN bash /tmp/build_netbsd_toolchain.sh
+
+# Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the
+# default arm-linux-gnueabihf one
 ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
-  CC_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-gcc \
-  CXX_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-g++
+    CC_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-gcc \
+    CXX_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-g++ \
+    AR_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-ar \
+    CC_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-gcc \
+    CXX_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-g++ \
+    AR_x86_64_unknown_netbsd=x86_64-unknown-netbsd-ar \
+    CC_x86_64_unknown_netbsd=x86_64-unknown-netbsd-gcc \
+    CXX_x86_64_unknown_netbsd=x86_64-unknown-netbsd-g++
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
