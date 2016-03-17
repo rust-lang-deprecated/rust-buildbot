@@ -9,3 +9,4 @@ ct-ng oldconfig
 ct-ng build
 rm -rf .build
 popd
+rm -rf $1

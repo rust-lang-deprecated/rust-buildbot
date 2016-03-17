@@ -19,6 +19,7 @@ mk_make() {
   make
   make install
   popd
+  rm -rf make-${version}
 }
 
 mk_crosstool_ng() {
@@ -30,6 +31,7 @@ mk_crosstool_ng() {
   make
   make install
   popd
+  rm -rf crosstool-ng
 }
 
 main() {

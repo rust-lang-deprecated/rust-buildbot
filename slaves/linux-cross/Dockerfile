@@ -96,31 +96,14 @@ RUN /bin/bash build_toolchain.sh mipsel-linux-musl
 RUN /bin/bash build_toolchain.sh armv7-linux-gnueabihf
 
 USER root
-RUN rm -rf /build
 
 # Rename all the compilers we just built into /usr/bin and also without
 # `-unknown-` in the name because it appears lots of other compilers in Ubuntu
 # don't have this name in the component by default either.
-RUN                                               \
-  for f in `ls /x-tools/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-*`; do     \
-    g=`basename $f`;  \
-    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
-  done &&                                        \
-  for f in `ls /x-tools/arm-unknown-linux-gnueabihf/bin/arm-unknown-linux-gnueabihf-*`; do     \
-    g=`basename $f`;  \
-    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
-  done &&                                        \
-  for f in `ls /x-tools/mips-unknown-linux-musl/bin/mips-unknown-linux-musl-*`; do     \
-    g=`basename $f`;  \
-    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
-  done &&                                        \
-  for f in `ls /x-tools/mipsel-unknown-linux-musl/bin/mipsel-unknown-linux-musl-*`; do     \
-    g=`basename $f`;  \
-    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
-  done &&                                        \
-  for f in `ls /x-tools/armv7-unknown-linux-gnueabihf/bin/armv7-unknown-linux-gnueabihf-*`; do     \
-    g=`basename $f`;  \
-    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;    \
+RUN                                                                           \
+  for f in `ls /x-tools/*-unknown-linux-*/bin/*-unknown-linux-*`; do          \
+    g=`basename $f`;                                                          \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;                     \
   done
 
 # Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the default
