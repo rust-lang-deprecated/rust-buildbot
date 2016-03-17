@@ -31,7 +31,8 @@ make -j10
 cp lib/libunwind.a /musl-x86_64/lib
 
 # (Note: the next cmake call doesn't fully override the previous cached one, so remove the cached
-# configuration manually)
+# configuration manually. IOW, if don't do this or call make clean we'll end up building libunwind
+# for x86_64 again)
 rm -rf *
 # for i686
 CFLAGS="$CFLAGS -m32" CXXFLAGS="$CXXFLAGS -m32" cmake /build/libunwind-3.7.0.src \
