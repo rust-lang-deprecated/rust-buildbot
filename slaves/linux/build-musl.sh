@@ -3,10 +3,10 @@
 set -ex
 
 export CFLAGS=-fPIC
-
+MUSL=musl-1.1.14
 # Support building MUSL
-curl http://www.musl-libc.org/releases/musl-1.1.11.tar.gz | tar xzf -
-cd musl-1.1.11
+curl http://www.musl-libc.org/releases/$MUSL.tar.gz | tar xzf -
+cd $MUSL
 # for x86_64
 ./configure --prefix=/musl-x86_64 --disable-shared
 make -j10
