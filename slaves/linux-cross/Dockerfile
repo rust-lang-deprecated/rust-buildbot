@@ -5,16 +5,16 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         curl make cmake git wget file \
         python-dev python-pip stunnel \
         bzip2 xz-utils \
-        g++ gcc libc6-dev \
-        gcc-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
-        gcc-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
-        gcc-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
+        g++ libc6-dev \
+        g++-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
+        g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
+        g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
         lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
         software-properties-common
 RUN add-apt-repository ppa:angelsl/mips-cross && apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
-        gcc-5-mips-linux-gnu libc6-dev-mips-cross \
-        gcc-5-mipsel-linux-gnu libc6-dev-mipsel-cross
+        g++-5-mips-linux-gnu libc6-dev-mips-cross \
+        g++-5-mipsel-linux-gnu libc6-dev-mipsel-cross
 
 # Rename compilers to variants without version numbers so the build
 # configuration in the standard library can pick them up.
