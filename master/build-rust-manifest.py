@@ -60,6 +60,11 @@ host_list = sorted([
     "i686-pc-windows-msvc",
     "x86_64-apple-darwin",
     "i686-apple-darwin",
+    "x86_64-unknown-freebsd",
+    "x86_64-unknown-netbsd",
+    "arm-unknown-linux-gnueabi",
+    "arm-unknown-linux-gnueabihf",
+    "armv7-unknown-linux-gnueabihf",
 ])
 
 # These are the platforms we produce standard libraries for
@@ -77,6 +82,8 @@ target_list = sorted([
     "i686-pc-windows-gnu",
     "i686-pc-windows-msvc",
     "i686-unknown-linux-gnu",
+    "mips-unknown-linux-musl",
+    "mipsel-unknown-linux-musl",
     "mips-unknown-linux-gnu",
     "mipsel-unknown-linux-gnu",
     "powerpc-unknown-linux-gnu",
@@ -87,8 +94,10 @@ target_list = sorted([
     "x86_64-pc-windows-gnu",
     "x86_64-pc-windows-msvc",
     "x86_64-rumprun-netbsd",
+    "x86_64-unknown-freebsd",
     "x86_64-unknown-linux-gnu",
     "x86_64-unknown-linux-musl",
+    "x86_64-unknown-netbsd",
 ])
 
 # windows-gnu platforms require an extra bundle of gnu stuff
