@@ -128,6 +128,19 @@ For targets: `armv7-unknown-linux-gnueabihf`
     libraries like jemalloc. See the mk/cfg/arm(v7)-uknown-linux-gnueabi{,hf}.mk
     file in Rust's source code.
 
+## `aarch64-linux-gnu.config`
+
+For targets: `aarch64-unknown-linux-gnu`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = arm
+- Target options > Bitness = 64-bit
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 4.2.6
+- C-library > glibc version = 2.17 -- aarch64 support was introduced in this version
+- C compiler > gcc version = 5.2.0
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
 ## `mips-linux-musl.config`
 
 For targets: `mips-unknown-linux-musl`

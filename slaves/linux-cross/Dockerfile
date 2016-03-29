@@ -6,7 +6,6 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         python-dev python-pip stunnel \
         bzip2 xz-utils \
         g++ libc6-dev \
-        g++-4.8-aarch64-linux-gnu libc6-dev-arm64-cross \
         g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
         g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
         lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
@@ -50,6 +49,7 @@ RUN /bin/bash build_toolchain_root.sh && \
     chown rustbuild:rustbuild /build && \
     chown rustbuild:rustbuild /x-tools
 COPY linux-cross/build_toolchain.sh \
+    linux-cross/aarch64-linux-gnu.config \
     linux-cross/arm-linux-gnueabi.config \
     linux-cross/arm-linux-gnueabihf.config \
     linux-cross/mips-linux-musl.config \
@@ -58,14 +58,16 @@ COPY linux-cross/build_toolchain.sh \
     /build/
 USER rustbuild
 
-# Build two full toolchains for the `arm-unknown-linux-gneuabi` and
-# `arm-unknown-linux-gnueabihf` targets. We build toolchains from scratch to
-# primarily move to an older glibc. Ubuntu does indeed have these toolchains in
-# its repositories (so we could install that package), but they package a
-# relatively newer version of glibc. In order for the binaries we produce to be
-# maximall compatible, we push the glibc version back to 2.14
+# Build three full toolchains for the `arm-unknown-linux-gneuabi`,
+# `arm-unknown-linux-gnueabihf` and `aarch64-unknown-linux-gnu` targets. We
+# build toolchains from scratch to primarily move to an older glibc. Ubuntu
+# does indeed have these toolchains in its repositories (so we could install
+# that package), but they package a relatively newer version of glibc. In order
+# for the binaries we produce to be maximall compatible, we push the glibc
+# version back to 2.14 for arm and 2.17 for aarch64
 RUN /bin/bash build_toolchain.sh arm-linux-gnueabi
 RUN /bin/bash build_toolchain.sh arm-linux-gnueabihf
+RUN /bin/bash build_toolchain.sh aarch64-linux-gnu
 
 # Also build two full toolchains for the `{mips,mipsel}-unknown-linux-musl`
 # targets. Currently these are essentially aliases to run on OpenWRT devices and
@@ -101,10 +103,17 @@ USER root
 # Rename all the compilers we just built into /usr/bin and also without
 # `-unknown-` in the name because it appears lots of other compilers in Ubuntu
 # don't have this name in the component by default either.
+# Also the aarch64 compiler is prefixed with `aarch64-unknown-linux-gnueabi`
+# by crosstool-ng, but Ubuntu just prefixes it with `aarch64-linux-gnu` so
+# we'll, additionally, strip the eabi part from its binaries.
 RUN                                                                           \
   for f in `ls /x-tools/*-unknown-linux-*/bin/*-unknown-linux-*`; do          \
     g=`basename $f`;                                                          \
     ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;                     \
+  done && \
+  for f in `ls /usr/bin/aarch64-linux-gnueabi-*`; do                          \
+    g=`basename $f`;                                                          \
+    mv -v $f /usr/bin/`echo $g | sed -e 's/eabi//'`;                          \
   done
 
 COPY linux-cross/build_freebsd_toolchain.sh /tmp/
