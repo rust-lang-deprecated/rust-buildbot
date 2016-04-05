@@ -71,6 +71,7 @@ host_list = sorted([
 # These are the platforms we produce standard libraries for
 target_list = sorted([
     "aarch64-apple-ios",
+    "aarch64-unknown-linux-gnu",
     "arm-linux-androideabi",
     "arm-unknown-linux-gnueabi",
     "arm-unknown-linux-gnueabihf",
