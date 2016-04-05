@@ -33,16 +33,20 @@ cp freebsd/usr/lib/Scrt1.o $dst/lib
 cp freebsd/usr/lib/crti.o $dst/lib
 cp freebsd/usr/lib/crtn.o $dst/lib
 cp freebsd/usr/lib/libc.a $dst/lib
+cp freebsd/usr/lib/libutil.a $dst/lib
+cp freebsd/usr/lib/libutil_p.a $dst/lib
 cp freebsd/usr/lib/libm.a $dst/lib
 cp freebsd/usr/lib/librt.so.1 $dst/lib
 cp freebsd/usr/lib/libexecinfo.so.1 $dst/lib
 cp freebsd/lib/libc.so.7 $dst/lib
 cp freebsd/lib/libm.so.5 $dst/lib
+cp freebsd/lib/libutil.so.9 $dst/lib
 cp freebsd/lib/libthr.so.3 $dst/lib/libpthread.so
 
 ln -s libc.so.7 $dst/lib/libc.so
 ln -s libm.so.5 $dst/lib/libm.so
 ln -s librt.so.1 $dst/lib/librt.so
+ln -s libutil.so.9 $dst/lib/libutil.so
 ln -s libexecinfo.so.1 $dst/lib/libexecinfo.so
 rm -rf freebsd
 
