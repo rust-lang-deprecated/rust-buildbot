@@ -117,7 +117,8 @@ RUN                                                                           \
   done
 
 COPY linux-cross/build_freebsd_toolchain.sh /tmp/
-RUN bash /tmp/build_freebsd_toolchain.sh
+RUN bash /tmp/build_freebsd_toolchain.sh i686
+RUN bash /tmp/build_freebsd_toolchain.sh x86_64
 COPY linux-cross/build_netbsd_toolchain.sh /tmp/
 RUN bash /tmp/build_netbsd_toolchain.sh
 
@@ -129,6 +130,9 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     AR_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-ar \
     CC_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-gcc \
     CXX_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-g++ \
+    AR_i686_unknown_freebsd=i686-unknown-freebsd10-ar \
+    CC_i686_unknown_freebsd=i686-unknown-freebsd10-gcc \
+    CXX_i686_unknown_freebsd=i686-unknown-freebsd10-g++ \
     AR_x86_64_unknown_netbsd=x86_64-unknown-netbsd-ar \
     CC_x86_64_unknown_netbsd=x86_64-unknown-netbsd-gcc \
     CXX_x86_64_unknown_netbsd=x86_64-unknown-netbsd-g++ \

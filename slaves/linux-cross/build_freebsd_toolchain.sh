@@ -2,6 +2,7 @@
 
 set -ex
 
+ARCH=$1
 BINUTILS=2.25.1
 GCC=5.3.0
 
@@ -13,7 +14,7 @@ curl https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS.tar.bz2 | tar xjf -
 mkdir binutils-build
 cd binutils-build
 ../binutils-$BINUTILS/configure \
-  --target=x86_64-unknown-freebsd10
+  --target=$ARCH-unknown-freebsd10
 make -j10
 make install
 cd ../..
@@ -22,10 +23,17 @@ rm -rf binutils
 # Next, download the FreeBSD libc and relevant header files
 
 mkdir freebsd
-curl ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/10.2-RELEASE/base.txz | \
-  tar xJf - -C freebsd ./usr/include ./usr/lib ./lib
+case "$ARCH" in
+    x86_64)
+        URL=ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/10.2-RELEASE/base.txz
+        ;;
+    i686)
+        URL=ftp://ftp.freebsd.org/pub/FreeBSD/releases/i386/10.2-RELEASE/base.txz
+        ;;
+esac
+curl $URL | tar xJf - -C freebsd ./usr/include ./usr/lib ./lib
 
-dst=/usr/local/x86_64-unknown-freebsd10
+dst=/usr/local/$ARCH-unknown-freebsd10
 
 cp -r freebsd/usr/include $dst/
 cp freebsd/usr/lib/crt1.o $dst/lib
@@ -61,7 +69,7 @@ mkdir ../gcc-build
 cd ../gcc-build
 ../gcc-$GCC/configure                            \
   --enable-languages=c,c++                       \
-  --target=x86_64-unknown-freebsd10              \
+  --target=$ARCH-unknown-freebsd10               \
   --disable-multilib                             \
   --disable-nls                                  \
   --disable-libgomp                              \
