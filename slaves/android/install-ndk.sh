@@ -8,9 +8,9 @@ set -ex
 curl -O http://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip
 unzip -q android-ndk-r11c-linux-x86_64.zip
 bash android-ndk-r11c/build/tools/make-standalone-toolchain.sh \
-        --platform=android-18 \
+        --platform=android-9 \
         --toolchain=arm-linux-androideabi-4.9 \
-        --install-dir=/android/ndk-arm-18 \
+        --install-dir=/android/ndk-arm-9 \
         --ndk-dir=/android/android-ndk-r11c \
         --arch=arm
 bash android-ndk-r11c/build/tools/make-standalone-toolchain.sh \
@@ -26,9 +26,9 @@ bash android-ndk-r11c/build/tools/make-standalone-toolchain.sh \
         --ndk-dir=/android/android-ndk-r11c \
         --arch=arm64
 bash android-ndk-r11c/build/tools/make-standalone-toolchain.sh \
-        --platform=android-21 \
+        --platform=android-9 \
         --toolchain=x86-4.9 \
-        --install-dir=/android/ndk-x86 \
+        --install-dir=/android/ndk-x86-9 \
         --ndk-dir=/android/android-ndk-r11c \
         --arch=x86
 bash android-ndk-r11c/build/tools/make-standalone-toolchain.sh \
