@@ -295,12 +295,16 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
     mingw_pkg = build_package_def_from_archive("rust-mingw", "dist", rustc_date,
                                                rustc_version, rustc_short_version,
                                                mingw_list)
+    src_pkg = build_package_def_from_archive("rust-src", "dist", rustc_date,
+                                             rustc_version, rustc_short_version,
+                                             ["*"])
 
     packages["rustc"] = rustc_pkg
     packages["rust-std"] = std_pkg
     packages["rust-docs"] = doc_pkg
     packages["cargo"] = cargo_pkg
     packages["rust-mingw"] = mingw_pkg
+    packages["rust-src"] = src_pkg
 
     # Build the rust package. It is the only one with subcomponents
     rust_target_pkgs = {}
@@ -331,6 +335,12 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
                 "pkg": "rust-std",
                 "target": target,
             }]
+
+        # The src package is also an extension
+        extensions += [{
+            "pkg": "rust-src",
+            "target": "*",
+        }]
 
         # The binaries of the 'rust' package are on the local disk.
         # url_and_hash_of_rust_package will try to locate them
@@ -402,8 +412,14 @@ def live_package_url(name, dist_dir, date, version, target):
     if name == "cargo":
         maybe_channel = "nightly"
 
-    url1 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + version + "-" + target + ".tar.gz"
-    url2 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + maybe_channel + "-" + target + ".tar.gz"
+    if name == "rust-src":
+        # The build system treats source packages as a separate target for `rustc`
+        # but for rustup we'd like to treat them as a completely separate package.
+        url1 = s3_addy + "/" + dist_dir + "/" + date + "/rustc-" + version + "-src.tar.gz"
+        url2 = s3_addy + "/" + dist_dir + "/" + date + "/rustc-" + maybe_channel + "-src.tar.gz"
+    else:
+        url1 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + version + "-" + target + ".tar.gz"
+        url2 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + maybe_channel + "-" + target + ".tar.gz"
 
     print "checking " + url1
     request = urllib2.Request(url1)
