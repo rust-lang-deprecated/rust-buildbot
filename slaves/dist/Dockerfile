@@ -2,6 +2,9 @@ FROM centos:5
 
 WORKDIR /build
 
+# Install updates.
+RUN yum upgrade -y
+
 # curl == now we can download things
 # bzip2 == now we can download bz2 things
 # gcc == now we can build gcc
