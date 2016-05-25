@@ -2,11 +2,11 @@
 
 set -ex
 
-VERSION=1.0.2g
-SHA256=b784b1b3907ce39abf4098702dade6365522a253ad1552e267a9a0e89594aa33
+VERSION=1.0.2h
+SHA256=1d4007e53aad94a5b2002fe045ee7bb0b3d98f1a47f8b2bc851dcd1c74332919
 
 yum install -y setarch
-curl http://openssl.org/source/openssl-$VERSION.tar.gz | \
+curl ftp://ftp.openssl.org/source/openssl-$VERSION.tar.gz | \
   tee >(sha256sum > openssl-$VERSION.tar.gz.sha256)    | tar xzf -
 test $SHA256 = $(cut -d ' ' -f 1 openssl-$VERSION.tar.gz.sha256) || exit 1
 
