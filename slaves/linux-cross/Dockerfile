@@ -9,7 +9,7 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
         g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
         lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
-        software-properties-common
+        software-properties-common bsdtar
 RUN add-apt-repository ppa:angelsl/mips-cross && apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
         g++-5-mips-linux-gnu libc6-dev-mips-cross \
@@ -121,6 +121,9 @@ RUN bash /tmp/build_freebsd_toolchain.sh i686
 RUN bash /tmp/build_freebsd_toolchain.sh x86_64
 COPY linux-cross/build_netbsd_toolchain.sh /tmp/
 RUN bash /tmp/build_netbsd_toolchain.sh
+COPY linux-cross/build_dragonfly_toolchain.sh /tmp/
+RUN bash /tmp/build_dragonfly_toolchain.sh
+
 
 # Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the
 # default arm-linux-gnueabihf one
@@ -136,6 +139,9 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     AR_x86_64_unknown_netbsd=x86_64-unknown-netbsd-ar \
     CC_x86_64_unknown_netbsd=x86_64-unknown-netbsd-gcc \
     CXX_x86_64_unknown_netbsd=x86_64-unknown-netbsd-g++ \
+    AR_x86_64_unknown_dragonfly=x86_64-unknown-dragonfly-ar \
+    CC_x86_64_unknown_dragonfly=x86_64-unknown-dragonfly-gcc \
+    CXX_x86_64_unknown_dragonfly=x86_64-unknown-dragonfly-g++ \
     AR_mips_unknown_linux_musl=mips-linux-musl-ar \
     CC_mips_unknown_linux_musl=mips-linux-musl-gcc \
     CXX_mips_unknown_linux_musl=mips-linux-musl-g++ \
