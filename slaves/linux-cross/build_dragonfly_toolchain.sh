@@ -58,6 +58,16 @@ cd gcc
 curl https://ftp.gnu.org/gnu/gcc/gcc-$GCC/gcc-$GCC.tar.bz2 | tar xjf -
 cd gcc-$GCC
 
+# The following three patches are taken from DragonFly's dports collection:
+# https://github.com/DragonFlyBSD/DPorts/tree/master/lang/gcc5
+# The dports specification for gcc5 contains a few more patches, but they are
+# not relevant in this situation, as they are for a language we don't need
+# (e.g. java), or a platform which is not supported by DragonFly (e.g. i386,
+# powerpc64, ia64, arm).
+#
+# These patches probably only need to be updated in case the gcc version is
+# updated.
+
 patch -p0 <<'EOF'
 --- libatomic/configure.tgt.orig	2015-07-09 16:08:55 UTC
 +++ libatomic/configure.tgt
