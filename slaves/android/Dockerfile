@@ -5,7 +5,7 @@ RUN apt-get -y update
 RUN apt-get -y install --force-yes \
         curl make git expect libncurses5:i386 libstdc++6:i386 zlib1g:i386 \
         python-dev python-pip stunnel \
-        g++-multilib openjdk-6-jre psmisc unzip
+        g++-multilib openjdk-6-jre psmisc unzip cmake
 
 # Install buildbot and prep it to run
 RUN pip install buildbot-slave
