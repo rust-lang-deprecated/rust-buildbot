@@ -9,6 +9,7 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
         g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
         lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
+        lib64stdc++-4.8-dev-powerpc-cross \
         software-properties-common bsdtar
 RUN add-apt-repository ppa:angelsl/mips-cross && apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
