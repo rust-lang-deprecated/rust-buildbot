@@ -78,6 +78,7 @@ target_list = sorted([
     "arm-unknown-linux-gnueabihf",
     "armv7-apple-ios",
     "armv7-unknown-linux-gnueabihf",
+    "armv7-linux-androideabi",
     "armv7s-apple-ios",
     "i386-apple-ios",
     "i686-apple-darwin",
