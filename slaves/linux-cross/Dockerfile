@@ -1,18 +1,17 @@
-FROM ubuntu:15.10
+FROM ubuntu:16.04
 
 RUN apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
         curl make cmake git wget file \
-        python-dev python-pip stunnel \
+        python-dev python-pip python-setuptools stunnel \
         bzip2 xz-utils \
         g++ libc6-dev \
         g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
         g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
         lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
         lib64stdc++-4.8-dev-powerpc-cross \
-        software-properties-common bsdtar
-RUN add-apt-repository ppa:angelsl/mips-cross && apt-get update
-RUN apt-get install -y --force-yes --no-install-recommends \
+        bsdtar \
+        cmake \
         g++-5-mips-linux-gnu libc6-dev-mips-cross \
         g++-5-mipsel-linux-gnu libc6-dev-mipsel-cross
 
@@ -29,15 +28,15 @@ RUN                                              \
     ln -vs $f `echo $f | sed -e 's/-4.7$//'`;    \
   done
 
-# Install rumprun cross compiler
-WORKDIR /build
-COPY linux-cross/build_rumprun.sh /build/
-RUN /bin/bash build_rumprun.sh && rm -rf /build
-
 # Install buildbot and prep it to run
 RUN pip install buildbot-slave
 RUN groupadd -r rustbuild && useradd -m -r -g rustbuild rustbuild
 RUN mkdir /buildslave && chown rustbuild:rustbuild /buildslave
+
+# Install rumprun cross compiler
+WORKDIR /build
+COPY linux-cross/build_rumprun.sh /build/
+RUN /bin/bash build_rumprun.sh && rm -rf /build
 
 # Build/install crosstool-ng cross compilers
 # NOTE crosstool-ng can't be executed by root so we execute it under the
