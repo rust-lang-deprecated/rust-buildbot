@@ -119,10 +119,10 @@ RUN                                                                           \
 COPY linux-cross/build_freebsd_toolchain.sh /tmp/
 RUN bash /tmp/build_freebsd_toolchain.sh i686
 RUN bash /tmp/build_freebsd_toolchain.sh x86_64
-COPY linux-cross/build_netbsd_toolchain.sh /tmp/
-RUN bash /tmp/build_netbsd_toolchain.sh
 COPY linux-cross/build_dragonfly_toolchain.sh /tmp/
 RUN bash /tmp/build_dragonfly_toolchain.sh
+COPY linux-cross/build_netbsd_toolchain.sh /tmp/
+RUN bash /tmp/build_netbsd_toolchain.sh
 
 
 # Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the
