@@ -165,6 +165,7 @@ For targets: `mipsel-unknown-linux-musl`
 - Target options > Target Architecture = mips
 - Target options > Endianness = **Little** endian
 - Target options > Architecture level = mips32 -- (+)
+- Target options > Floating point = software (no FPU) -- (+)
 - Operating System > Target OS = linux
 - Operating System > Linux kernel version = 4.3 -- OpenWRT trunk uses 4.4 though
 - C-library > C library = musl
