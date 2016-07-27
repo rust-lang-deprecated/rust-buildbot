@@ -51,10 +51,13 @@ RUN /bin/bash build_toolchain_root.sh && \
 COPY linux-cross/build_toolchain.sh \
     linux-cross/aarch64-linux-gnu.config \
     linux-cross/arm-linux-gnueabi.config \
+    linux-cross/arm-linux-musleabi.config \
     linux-cross/arm-linux-gnueabihf.config \
+    linux-cross/arm-linux-musleabihf.config \
     linux-cross/mips-linux-musl.config \
     linux-cross/mipsel-linux-musl.config \
     linux-cross/armv7-linux-gnueabihf.config \
+    linux-cross/armv7-linux-musleabihf.config \
     /build/
 USER rustbuild
 
@@ -98,6 +101,11 @@ RUN /bin/bash build_toolchain.sh mipsel-linux-musl
 # for armv7 instead of for armv6 should make rustc (slightly) faster.
 RUN /bin/bash build_toolchain.sh armv7-linux-gnueabihf
 
+# Build a bunch of toolchains for ARM musl targets
+RUN /bin/bash build_toolchain.sh arm-linux-musleabi
+RUN /bin/bash build_toolchain.sh arm-linux-musleabihf
+RUN /bin/bash build_toolchain.sh armv7-linux-musleabihf
+
 USER root
 
 # Rename all the compilers we just built into /usr/bin and also without
@@ -124,12 +132,27 @@ RUN bash /tmp/build_dragonfly_toolchain.sh
 COPY linux-cross/build_netbsd_toolchain.sh /tmp/
 RUN bash /tmp/build_netbsd_toolchain.sh
 
+# Also build libunwind.a for the ARM musl targets
+COPY linux-cross/build-libunwind.sh \
+    /build/
+RUN /bin/bash build-libunwind.sh arm-unknown-linux-musleabi
+RUN /bin/bash build-libunwind.sh arm-unknown-linux-musleabihf
+RUN /bin/bash build-libunwind.sh armv7-unknown-linux-musleabihf
 
 # Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the
 # default arm-linux-gnueabihf one
 ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     CC_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-gcc \
     CXX_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-g++ \
+    AR_arm_unknown_linux_musleabi=arm-linux-musleabi-ar \
+    CC_arm_unknown_linux_musleabi=arm-linux-musleabi-gcc \
+    CXX_arm_unknown_linux_musleabi=arm-linux-musleabi-g++ \
+    AR_arm_unknown_linux_musleabihf=arm-linux-musleabihf-ar \
+    CC_arm_unknown_linux_musleabihf=arm-linux-musleabihf-gcc \
+    CXX_arm_unknown_linux_musleabihf=arm-linux-musleabihf-g++ \
+    AR_armv7_unknown_linux_musleabihf=armv7-linux-musleabihf-ar \
+    CC_armv7_unknown_linux_musleabihf=armv7-linux-musleabihf-gcc \
+    CXX_armv7_unknown_linux_musleabihf=armv7-linux-musleabihf-g++ \
     AR_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-ar \
     CC_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-gcc \
     CXX_x86_64_unknown_freebsd=x86_64-unknown-freebsd10-g++ \
