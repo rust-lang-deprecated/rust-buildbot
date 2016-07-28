@@ -89,6 +89,20 @@ For targets: `arm-unknown-linux-gnueabi`
 - C compiler > gcc version = 4.9.3
 - C compiler > C++ = ENABLE -- to cross compile LLVM
 
+## `arm-linux-musleabi.config`
+
+For targets: `arm-unknown-linux-musleabi`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = arm
+- Target options > Architecture level = armv6 -- (+)
+- Target options > Floating point = software (no FPU) -- (\*)
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.2.72 -- Precise kernel
+- C-library > C library = musl
+- C compiler > gcc version = 5.2.0
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
 ## `arm-linux-gnueabihf.config`
 
 For targets: `arm-unknown-linux-gnueabihf`
@@ -103,6 +117,22 @@ For targets: `arm-unknown-linux-gnueabihf`
 - Operating System > Linux kernel version = 3.2.72 -- Precise kernel
 - C-library > glibc version = 2.14.1
 - C compiler > gcc version = 4.9.3
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
+## `arm-linux-musleabihf.config`
+
+For targets: `arm-unknown-linux-musleabihf`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = arm
+- Target options > Architecture level = armv6 -- (+)
+- Target options > Use specific FPU = vfp -- (+)
+- Target options > Floating point = hardware (FPU) -- (\*)
+- Target options > Default instruction set mode = arm -- (+)
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.2.72 -- Precise kernel
+- C-library > C library = musl
+- C compiler > gcc version = 5.2.0
 - C compiler > C++ = ENABLE -- to cross compile LLVM
 
 ## `armv7-linux-gnueabihf.config`
@@ -127,6 +157,23 @@ For targets: `armv7-unknown-linux-gnueabihf`
 (+) These options have been selected to match the gcc flags we use to compile C
     libraries like jemalloc. See the mk/cfg/arm(v7)-uknown-linux-gnueabi{,hf}.mk
     file in Rust's source code.
+
+## `armv7-linux-musleabihf.config`
+
+For targets: `armv7-unknown-linux-musleabihf`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = arm
+- Target options > Suffix to the arch-part = v7
+- Target options > Architecture level = armv7-a -- (+)
+- Target options > Use specific FPU = vfpv3-d16 -- (\*)
+- Target options > Floating point = hardware (FPU) -- (\*)
+- Target options > Default instruction set mode = thumb -- (\*)
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.2.72 -- Precise kernel
+- C-library > C library = musl
+- C compiler > gcc version = 5.2.0
+- C compiler > C++ = ENABLE -- to cross compile LLVM
 
 ## `aarch64-linux-gnu.config`
 
