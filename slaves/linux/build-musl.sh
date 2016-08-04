@@ -3,6 +3,7 @@
 set -ex
 
 export CFLAGS="-fPIC -Wa,-mrelax-relocations=no"
+export CXXFLAGS="-Wa,-mrelax-relocations=no"
 MUSL=musl-1.1.14
 # Support building MUSL
 curl http://www.musl-libc.org/releases/$MUSL.tar.gz | tar xzf -
