@@ -5,7 +5,8 @@ set -ex
 ARCH=x86_64
 BINUTILS=2.25.1
 GCC=5.3.0
-URL_DFLY_ISO=http://mirror-master.dragonflybsd.org/iso-images/dfly-x86_64-4.4.3_REL.iso.bz2
+DF_VERSION=4.6.0_REL
+URL_DFLY_ISO=https://mirror-master.dragonflybsd.org/iso-images/dfly-x86_64-${DF_VERSION}.iso.bz2
 
 mkdir binutils
 cd binutils
@@ -52,7 +53,7 @@ ln -s libutil.so.4 $dst/lib/libutil.so
 ln -s libexecinfo.so.1 $dst/lib/libexecinfo.so
 rm -rf dragonfly
 
-# Finally, download and build gcc to target FreeBSD
+# Finally, download and build gcc to target DragonFly
 mkdir gcc
 cd gcc
 curl https://ftp.gnu.org/gnu/gcc/gcc-$GCC/gcc-$GCC.tar.bz2 | tar xjf -
