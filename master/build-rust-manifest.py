@@ -415,8 +415,8 @@ def live_package_url(name, dist_dir, date, version, target):
     if name == "rust-src":
         # The build system treats source packages as a separate target for `rustc`
         # but for rustup we'd like to treat them as a completely separate package.
-        url1 = s3_addy + "/" + dist_dir + "/" + date + "/rustc-" + version + "-src.tar.gz"
-        url2 = s3_addy + "/" + dist_dir + "/" + date + "/rustc-" + maybe_channel + "-src.tar.gz"
+        url1 = s3_addy + "/" + dist_dir + "/" + date + "/rust-src-" + version + ".tar.gz"
+        url2 = s3_addy + "/" + dist_dir + "/" + date + "/rust-src-" + maybe_channel + ".tar.gz"
     else:
         url1 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + version + "-" + target + ".tar.gz"
         url2 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + maybe_channel + "-" + target + ".tar.gz"
