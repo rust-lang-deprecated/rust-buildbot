@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=1.28
-SHA256=60e4bfe0602fef34cd908d91cf638e17eeb09394d7b98c2487217dc4d3147562
+VERSION=1.29
+SHA256=236b11190c0a3a6885bdb8d61424f2b36a5872869aa3f7f695dea4b4843ae2f2
 
 curl https://ftp.gnu.org/gnu/tar/tar-$VERSION.tar.bz2 | \
   tee >(sha256sum > tar-$VERSION.tar.bz2.sha256)      | tar xjf -
