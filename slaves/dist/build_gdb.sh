@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=7.11
-SHA256=9382f5534aa0754169e1e09b5f1a3b77d1fa8c59c1e57617e06af37cb29c669a
+VERSION=7.11.1
+SHA256=57e9e9aa3172ee16aa1e9c66fef08b4393b51872cc153e3f1ffdf18a57440586
 
 yum install -y texinfo ncurses-devel
 curl https://ftp.gnu.org/gnu/gdb/gdb-$VERSION.tar.gz | \
