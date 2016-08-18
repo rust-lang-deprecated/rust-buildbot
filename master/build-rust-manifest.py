@@ -298,12 +298,16 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
     mingw_pkg = build_package_def_from_archive("rust-mingw", "dist", rustc_date,
                                                rustc_version, rustc_short_version,
                                                mingw_list)
+    src_pkg = build_package_def_from_archive("rust-src", "dist", rustc_date,
+                                             rustc_version, rustc_short_version,
+                                             ["*"])
 
     packages["rustc"] = rustc_pkg
     packages["rust-std"] = std_pkg
     packages["rust-docs"] = doc_pkg
     packages["cargo"] = cargo_pkg
     packages["rust-mingw"] = mingw_pkg
+    packages["rust-src"] = src_pkg
 
     # Build the rust package. It is the only one with subcomponents
     rust_target_pkgs = {}
@@ -334,6 +338,12 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
                 "pkg": "rust-std",
                 "target": target,
             }]
+
+        # The src package is also an extension
+        extensions += [{
+            "pkg": "rust-src",
+            "target": "*",
+        }]
 
         # The binaries of the 'rust' package are on the local disk.
         # url_and_hash_of_rust_package will try to locate them
@@ -405,8 +415,14 @@ def live_package_url(name, dist_dir, date, version, target):
     if name == "cargo":
         maybe_channel = "nightly"
 
-    url1 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + version + "-" + target + ".tar.gz"
-    url2 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + maybe_channel + "-" + target + ".tar.gz"
+    if name == "rust-src":
+        # The build system treats source packages as a separate target for `rustc`
+        # but for rustup we'd like to treat them as a completely separate package.
+        url1 = s3_addy + "/" + dist_dir + "/" + date + "/rust-src-" + version + ".tar.gz"
+        url2 = s3_addy + "/" + dist_dir + "/" + date + "/rust-src-" + maybe_channel + ".tar.gz"
+    else:
+        url1 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + version + "-" + target + ".tar.gz"
+        url2 = s3_addy + "/" + dist_dir + "/" + date + "/" + name + "-" + maybe_channel + "-" + target + ".tar.gz"
 
     print "checking " + url1
     request = urllib2.Request(url1)
@@ -468,39 +484,48 @@ def url_and_hash_of_rust_package(target, rustc_short_version):
     }
 
 def write_manifest(manifest, file_path):
+    def quote(value):
+        return '"' + str(value).replace('"', r'\"') + '"'
+    
+    def bare_key(key):
+        if re.match(r"^[a-zA-Z0-9_\-]+$", key):
+            return key
+        else:
+            return quote(key)
+
     with open(file_path, "w") as f:
         f.write('manifest-version = "2"\n')
-        f.write('date = "' + today + '"\n')
+        f.write('date = ' + quote(today) + '\n')
         f.write('\n')
 
         for name, pkg in sorted(manifest["pkg"].items()):
-            f.write('[pkg.' + name + ']\n')
-            f.write('version = "' + pkg["version"] + '"\n')
+            f.write('[pkg.' + bare_key(name) + ']\n')
+            f.write('version = ' + quote(pkg["version"]) + '\n')
             f.write('\n')
 
             for target, target_pkg in sorted(pkg["target"].items()):
                 available = "true"
                 if not target_pkg["available"]: available = "false"
 
-                f.write('[pkg.' + name + '.target.' + target + ']\n')
+                f.write('[pkg.' + bare_key(name) + '.target.' + bare_key(target) + ']\n')
                 f.write('available = ' + available + '\n')
-                f.write('url = "' + target_pkg["url"] + '"\n')
-                f.write('hash = "' + target_pkg["hash"] + '"\n')
+                f.write('url = ' + quote(target_pkg["url"]) + '\n')
+                f.write('hash = ' + quote(target_pkg["hash"]) + '\n')
                 f.write('\n')
 
                 components = target_pkg.get("components")
                 if components:
                     for component in components:
-                        f.write('[[pkg.' + name + '.target.' + target + '.components]]\n')
-                        f.write('pkg = "' + component["pkg"] + '"\n')
-                        f.write('target = "' + component["target"] + '"\n')
+                        f.write('[[pkg.' + bare_key(name) + '.target.' + bare_key(target) + '.components]]\n')
+                        f.write('pkg = ' + quote(component["pkg"]) + '\n')
+                        f.write('target = ' + quote(component["target"]) + '\n')
 
                 extensions = target_pkg.get("extensions")
                 if extensions:
                     for extension in extensions:
-                        f.write('[[pkg.' + name + '.target.' + target + '.extensions]]\n')
-                        f.write('pkg = "' + extension["pkg"] + '"\n')
-                        f.write('target = "' + extension["target"] + '"\n')
+                        f.write('[[pkg.' + bare_key(name) + '.target.' + bare_key(target) + '.extensions]]\n')
+                        f.write('pkg = ' + quote(extension["pkg"]) + '\n')
+                        f.write('target = ' + quote(extension["target"]) + '\n')
 
                 f.write('\n')
 
