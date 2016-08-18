@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=3.6.0
-SHA256=fd05ed40cc40ef9ef99fac7b0ece2e0b871858a82feade48546f5d2940147670
+VERSION=3.6.1
+SHA256=28ee98ec40427d41a45673847db7a905b59ce9243bb866eaf59dce0f58aaef11
 
 curl https://cmake.org/files/v${VERSION%\.*}/cmake-$VERSION.tar.gz | \
   tee >(sha256sum > cmake-$VERSION.tar.gz.sha256)                  | tar xzf -
