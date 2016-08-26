@@ -4,6 +4,7 @@ RUN apt-get update
 RUN apt-get install -y --force-yes --no-install-recommends \
         curl make cmake git wget file \
         python-dev python-pip python-setuptools stunnel \
+        zlib1g-dev \
         bzip2 xz-utils \
         g++ libc6-dev \
         g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
