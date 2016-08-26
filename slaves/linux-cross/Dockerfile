@@ -7,8 +7,9 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         bzip2 xz-utils \
         g++ libc6-dev \
         g++-4.8-powerpc-linux-gnu libc6-dev-powerpc-cross \
+        g++-5-powerpc64-linux-gnu libc6-dev-ppc64-powerpc-cross \
         g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
-        lib64gcc-4.8-dev-powerpc-cross libc6-dev-ppc64-powerpc-cross \
+        lib64gcc-4.8-dev-powerpc-cross \
         lib64stdc++-4.8-dev-powerpc-cross \
         bsdtar \
         cmake \
@@ -165,12 +166,24 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     AR_x86_64_unknown_dragonfly=x86_64-unknown-dragonfly-ar \
     CC_x86_64_unknown_dragonfly=x86_64-unknown-dragonfly-gcc \
     CXX_x86_64_unknown_dragonfly=x86_64-unknown-dragonfly-g++ \
+    AR_mips_unknown_linux_gnu=mips-linux-gnu-ar \
+    CC_mips_unknown_linux_gnu=mips-linux-gnu-gcc-5 \
+    CXX_mips_unknown_linux_gnu=mips-linux-gnu-g++-5 \
     AR_mips_unknown_linux_musl=mips-linux-musl-ar \
     CC_mips_unknown_linux_musl=mips-linux-musl-gcc \
     CXX_mips_unknown_linux_musl=mips-linux-musl-g++ \
+    AR_mipsel_unknown_linux_gnu=mipsel-linux-gnu-ar \
+    CC_mipsel_unknown_linux_gnu=mipsel-linux-gnu-gcc-5 \
+    CXX_mipsel_unknown_linux_gnu=mipsel-linux-gnu-g++-5 \
     AR_mipsel_unknown_linux_musl=mipsel-linux-musl-ar \
     CC_mipsel_unknown_linux_musl=mipsel-linux-musl-gcc \
-    CXX_mipsel_unknown_linux_musl=mipsel-linux-musl-g++
+    CXX_mipsel_unknown_linux_musl=mipsel-linux-musl-g++ \
+    AR_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-ar \
+    CC_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-gcc-5 \
+    CXX_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-g++-5 \
+    AR_powerpc64le_unknown_linux_gnu=powerpc64-linux-gnu-ar \
+    CC_powerpc64le_unknown_linux_gnu=powerpc64-linux-gnu-gcc-5 \
+    CXX_powerpc64le_unknown_linux_gnu=powerpc64-linux-gnu-g++-5
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
