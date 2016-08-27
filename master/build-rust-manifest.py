@@ -76,8 +76,11 @@ target_list = sorted([
     "arm-linux-androideabi",
     "arm-unknown-linux-gnueabi",
     "arm-unknown-linux-gnueabihf",
+    "arm-unknown-linux-musleabi",
+    "arm-unknown-linux-musleabihf",
     "armv7-apple-ios",
     "armv7-unknown-linux-gnueabihf",
+    "armv7-unknown-linux-musleabihf",
     "armv7-linux-androideabi",
     "armv7s-apple-ios",
     "i386-apple-ios",
@@ -486,7 +489,7 @@ def url_and_hash_of_rust_package(target, rustc_short_version):
 def write_manifest(manifest, file_path):
     def quote(value):
         return '"' + str(value).replace('"', r'\"') + '"'
-    
+
     def bare_key(key):
         if re.match(r"^[a-zA-Z0-9_\-]+$", key):
             return key
