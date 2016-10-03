@@ -73,6 +73,7 @@ target_list = sorted([
     "aarch64-apple-ios",
     "aarch64-linux-android",
     "aarch64-unknown-linux-gnu",
+    "asmjs-unknown-emscripten",
     "arm-linux-androideabi",
     "arm-unknown-linux-gnueabi",
     "arm-unknown-linux-gnueabihf",
@@ -109,6 +110,7 @@ target_list = sorted([
     "x86_64-unknown-linux-gnu",
     "x86_64-unknown-linux-musl",
     "x86_64-unknown-netbsd",
+    "wasm32-unknown-emscripten",
 ])
 
 # windows-gnu platforms require an extra bundle of gnu stuff
