@@ -140,6 +140,10 @@ RUN /bin/bash build-libunwind.sh arm-unknown-linux-musleabi
 RUN /bin/bash build-libunwind.sh arm-unknown-linux-musleabihf
 RUN /bin/bash build-libunwind.sh armv7-unknown-linux-musleabihf
 
+RUN apt-get install -y --force-yes --no-install-recommends \
+        g++-mips64-linux-gnuabi64 \
+        g++-mips64el-linux-gnuabi64
+
 # Instruct rustbuild to use the armv7-linux-gnueabihf toolchain instead of the
 # default arm-linux-gnueabihf one
 ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
@@ -186,7 +190,13 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     CXX_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-g++ \
     AR_s390x_unknown_linux_gnu=s390x-linux-gnu-ar \
     CC_s390x_unknown_linux_gnu=s390x-linux-gnu-gcc \
-    CXX_s390x_unknown_linux_gnu=s390x-linux-gnu-g++
+    CXX_s390x_unknown_linux_gnu=s390x-linux-gnu-g++ \
+    AR_mips64_unknown_linux_gnuabi64=mips64-linux-gnu-ar \
+    CC_mips64_unknown_linux_gnuabi64=mips64-linux-gnu-gcc \
+    CXX_mips64_unknown_linux_gnuabi64=mips64-linux-gnu-g++ \
+    AR_mips64el_unknown_linux_gnuabi64=mips64-linux-gnu-ar \
+    CC_mips64el_unknown_linux_gnuabi64=mips64-linux-gnu-gcc \
+    CXX_mips64el_unknown_linux_gnuabi64=mips64-linux-gnu-g++
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
