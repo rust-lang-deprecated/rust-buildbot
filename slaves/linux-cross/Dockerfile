@@ -10,8 +10,6 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         g++-powerpc-linux-gnu libc6-dev-powerpc-cross \
         g++-5-powerpc64-linux-gnu libc6-dev-ppc64-powerpc-cross \
         g++-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
-        lib64gcc-dev-powerpc-cross \
-        lib64stdc++-dev-powerpc-cross \
         g++-s390x-linux-gnu \
         bsdtar \
         cmake \
