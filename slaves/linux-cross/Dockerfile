@@ -12,6 +12,7 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         g++-4.8-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
         lib64gcc-4.8-dev-powerpc-cross \
         lib64stdc++-4.8-dev-powerpc-cross \
+        g++-s390x-linux-gnu \
         bsdtar \
         cmake \
         g++-5-mips-linux-gnu libc6-dev-mips-cross \
@@ -184,7 +185,10 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     CXX_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-g++-5 \
     AR_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-ar \
     CC_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-gcc \
-    CXX_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-g++
+    CXX_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-g++ \
+    AR_s390x_unknown_linux_gnu=s390x-linux-gnu-ar \
+    CC_s390x_unknown_linux_gnu=s390x-linux-gnu-gcc \
+    CXX_s390x_unknown_linux_gnu=s390x-linux-gnu-g++
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
