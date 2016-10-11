@@ -191,12 +191,12 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     AR_s390x_unknown_linux_gnu=s390x-linux-gnu-ar \
     CC_s390x_unknown_linux_gnu=s390x-linux-gnu-gcc \
     CXX_s390x_unknown_linux_gnu=s390x-linux-gnu-g++ \
-    AR_mips64_unknown_linux_gnuabi64=mips64-linux-gnu-ar \
-    CC_mips64_unknown_linux_gnuabi64=mips64-linux-gnu-gcc \
-    CXX_mips64_unknown_linux_gnuabi64=mips64-linux-gnu-g++ \
-    AR_mips64el_unknown_linux_gnuabi64=mips64-linux-gnu-ar \
-    CC_mips64el_unknown_linux_gnuabi64=mips64-linux-gnu-gcc \
-    CXX_mips64el_unknown_linux_gnuabi64=mips64-linux-gnu-g++
+    AR_mips64_unknown_linux_gnuabi64=mips64-linux-gnuabi64-ar \
+    CC_mips64_unknown_linux_gnuabi64=mips64-linux-gnuabi64-gcc \
+    CXX_mips64_unknown_linux_gnuabi64=mips64-linux-gnuabi64-g++ \
+    AR_mips64el_unknown_linux_gnuabi64=mips64-linux-gnuabi64-ar \
+    CC_mips64el_unknown_linux_gnuabi64=mips64-linux-gnuabi64-gcc \
+    CXX_mips64el_unknown_linux_gnuabi64=mips64-linux-gnuabi64-g++
 
 # When running this container, startup buildbot
 WORKDIR /buildslave
