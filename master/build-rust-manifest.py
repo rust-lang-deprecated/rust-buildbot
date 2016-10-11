@@ -66,6 +66,13 @@ host_list = sorted([
     "arm-unknown-linux-gnueabihf",
     "armv7-unknown-linux-gnueabihf",
     "aarch64-unknown-linux-gnu",
+
+    "mips-unknown-linux-gnu",
+    "mipsel-unknown-linux-gnu",
+    "powerpc-unknown-linux-gnu",
+    "powerpc64-unknown-linux-gnu",
+    "powerpc64le-unknown-linux-gnu",
+    "s390x-unknown-linux-gnu",
 ])
 
 # These are the platforms we produce standard libraries for
