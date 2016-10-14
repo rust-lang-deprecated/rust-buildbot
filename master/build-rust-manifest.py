@@ -104,6 +104,8 @@ target_list = sorted([
     "i686-unknown-linux-musl",
     "mips-unknown-linux-gnu",
     "mips-unknown-linux-musl",
+    "mips64-unknown-linux-gnuabi64",
+    "mips64el-unknown-linux-gnuabi64",
     "mipsel-unknown-linux-gnu",
     "mipsel-unknown-linux-musl",
     "powerpc-unknown-linux-gnu",
