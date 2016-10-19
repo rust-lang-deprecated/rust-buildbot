@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=2.25.1
-SHA256=b5b14added7d78a8d1ca70b5cb75fef57ce2197264f4f5835326b0df22ac9f22
+VERSION=2.27
+SHA256=369737ce51587f92466041a97ab7d2358c6d9e1b6490b3940eb09fb0a9a6ac88
 
 curl https://ftp.gnu.org/gnu/binutils/binutils-$VERSION.tar.bz2 | \
   tee >(sha256sum > binutils-$VERSION.tar.bz2.sha256)           | tar xjf -
