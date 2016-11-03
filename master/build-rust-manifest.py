@@ -331,12 +331,14 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
         required_components = []
         extensions = []
 
-        for component in ["rustc", "rust-std", "rust-docs", "cargo"]:
+        # Required components for all hosts
+        for component in ["rustc", "rust-std", "cargo"]:
             required_components += [{
                 "pkg": component,
                 "target": host,
             }]
 
+        # Windows has some extra stuff for the gnu toolchain
         if "windows" in host and "gnu" in host:
             required_components += [
                 {
@@ -345,7 +347,14 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
                 }
             ]
 
-        # All std are extensions
+        # Optional components for all hosts
+        for component in ["rust-docs"]:
+            extensions += [{
+                "pkg": component,
+                "target": host,
+            }]
+
+        # All std are optional
         for target in target_list:
             # host std is required though
             if target == host: continue
@@ -355,7 +364,7 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
                 "target": target,
             }]
 
-        # The src package is also an extension
+        # The src package is also optional
         extensions += [{
             "pkg": "rust-src",
             "target": "*",
