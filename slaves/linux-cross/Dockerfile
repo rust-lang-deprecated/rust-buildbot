@@ -14,7 +14,8 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         bsdtar \
         cmake \
         g++-5-mips-linux-gnu libc6-dev-mips-cross \
-        g++-5-mipsel-linux-gnu libc6-dev-mipsel-cross
+        g++-5-mipsel-linux-gnu libc6-dev-mipsel-cross \
+        pkg-config
 
 # Rename compilers to variants without version numbers so the build
 # configuration in the standard library can pick them up.
