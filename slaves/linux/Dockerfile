@@ -7,7 +7,7 @@ RUN apt-get install -y \
         python-dev python-pip stunnel \
         g++-multilib libssl-dev libssl-dev:i386 gdb \
         valgrind libc6-dbg:i386 \
-        cmake
+        cmake pkg-config
 
 # Install buildbot and prep it to run
 RUN pip install buildbot-slave
