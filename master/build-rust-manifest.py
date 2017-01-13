@@ -157,8 +157,7 @@ def main():
         cargo_branch = 'master'
     else:
         cargo_branch = 'rust-' + rustc_short_version
-    if channel == "nightly":
-        cargo_branch = 'master'
+
     cargo_rev_url = "https://api.github.com/repos/rust-lang/cargo/commits/" + cargo_branch
     request = urllib2.Request(cargo_rev_url, headers={"Accept" : "Accept: application/vnd.github.3.sha"})
     cargo_rev = urllib2.urlopen(request).read()
