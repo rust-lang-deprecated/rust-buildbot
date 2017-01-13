@@ -191,16 +191,16 @@ def most_recent_build_date(channel, component):
 
 # Read the v1 manifests to find the installer name, download it
 # and extract the version file.
-def version_from_channel(channel, component, date):
+def version_from_channel(channel, component, date_or_sha):
     dist = dist_folder(component)
 
     if component == "cargo":
         target = "x86_64-unknown-linux-gnu"
         installer_name = "cargo-nightly-" + target + ".tar.gz"
-        installer_url = cargo_addy + "/" + date + "/" + installer_name
+        installer_url = cargo_addy + "/" + date_or_sha + "/" + installer_name
     else:
         # Load the manifest
-        manifest_url = s3_addy + "/" + dist + "/" + date + "/channel-" + component + "-" + channel
+        manifest_url = s3_addy + "/" + dist + "/" + date_or_sha + "/channel-" + component + "-" + channel
         print "downloading " + manifest_url
         response = urllib2.urlopen(manifest_url)
         if response.getcode() != 200:
@@ -216,7 +216,7 @@ def version_from_channel(channel, component, date):
         if installer_name == None:
             raise Exception("couldn't find installer in manifest for " + component)
 
-        installer_url = s3_addy + "/" + dist + "/" + date + "/" + installer_name
+        installer_url = s3_addy + "/" + dist + "/" + date_or_sha + "/" + installer_name
 
     # Download the installer
     print "downloading " + installer_url
@@ -253,21 +253,6 @@ def dist_folder(component):
     if component == "cargo":
         return "cargo-dist"
     return "dist"
-
-def cargo_rev_from_packaging(rustc_version):
-    print "downloading " + cargo_revs
-    response = urllib2.urlopen(cargo_revs)
-    if response.getcode() != 200:
-        raise Exception("couldn't download " + cargo_revs)
-    revs = response.read().strip()
-    for line in revs.split("\n"):
-        values = line.split(":")
-        version = values[0].strip()
-        date = values[1].strip()
-        if version == rustc_version:
-            return date
-    raise Exception("couldn't find cargo rev for " + rustc_version)
-
 
 def parse_short_version(version):
     p = re.compile("^\d*\.\d*\.\d*")
