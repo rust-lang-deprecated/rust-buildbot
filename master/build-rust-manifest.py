@@ -157,8 +157,7 @@ def main():
         cargo_branch = 'master'
     else:
         cargo_branch = 'rust-' + rustc_short_version
-    if channel == "nightly":
-        cargo_branch = 'master'
+
     cargo_rev_url = "https://api.github.com/repos/rust-lang/cargo/commits/" + cargo_branch
     request = urllib2.Request(cargo_rev_url, headers={"Accept" : "Accept: application/vnd.github.3.sha"})
     cargo_rev = urllib2.urlopen(request).read()
@@ -172,6 +171,9 @@ def main():
     print "cargo rev: " + cargo_rev
     print "cargo version: " + cargo_version
     print "cargo short version: " + cargo_short_version
+
+    # Download cargo binaries into the correct location
+    download_cargos(cargo_rev, cargo_short_version)
 
     # Validate the component artifacts and generate the manifest
     generate_manifest(rustc_date, rustc_version, rustc_short_version,
@@ -190,18 +192,46 @@ def most_recent_build_date(channel, component):
     date = response.read().strip();
     return date
 
+def cargo_ci_url(cargo_rev, target):
+    installer_name = "cargo-nightly-" + target + ".tar.gz"
+    installer_url = cargo_addy + "/" + cargo_rev + "/" + installer_name
+    return installer_url
+
+# The name of the cargo installer in it's final location on s.rlo
+# Unlike the files produced by cargo CI that are all called "-nightly", the
+# live installers mirror the rust naming scheme for the beta/stable channels
+# using either "-beta" or the cargo version number in the file name.
+# This is to avoid naming conflicts in the s.rlo dist archives.
+def cargo_live_name(short_version, target):
+    # This mirrors the logic in url_and_hash_of_rust_package
+    version = channel
+    if channel == "stable": version = short_version
+    return "cargo-" + version + "-" + target + ".tar.gz"
+
+def cargo_live_url(short_version, target):
+    file_name = cargo_live_name(short_version, target)
+    url = public_addy + "/dist/" + today + "/" + file_name
+    return url
+
+# This is the path where we are putting the cargo binaries,
+# downloaded from rust-lang-ci, to upload to static.rlo.
+# This path corresponds to the dist/ directory, and buildbot
+# will upload it to both dist/ and the archives.
+def cargo_local_path(short_version, target):
+    file_name = cargo_live_name(short_version, target)
+    return rust_package_dir + "/" + file_name
+
 # Read the v1 manifests to find the installer name, download it
 # and extract the version file.
-def version_from_channel(channel, component, date):
+def version_from_channel(channel, component, date_or_sha):
     dist = dist_folder(component)
 
     if component == "cargo":
-        target = "x86_64-unknown-linux-gnu"
-        installer_name = "cargo-nightly-" + target + ".tar.gz"
-        installer_url = cargo_addy + "/" + date + "/" + installer_name
+        installer_url = cargo_ci_url(date_or_sha, "x86_64-unknown-linux-gnu")
+        local_name = "cargo.tar.gz"
     else:
         # Load the manifest
-        manifest_url = s3_addy + "/" + dist + "/" + date + "/channel-" + component + "-" + channel
+        manifest_url = s3_addy + "/" + dist + "/" + date_or_sha + "/channel-" + component + "-" + channel
         print "downloading " + manifest_url
         response = urllib2.urlopen(manifest_url)
         if response.getcode() != 200:
@@ -217,21 +247,12 @@ def version_from_channel(channel, component, date):
         if installer_name == None:
             raise Exception("couldn't find installer in manifest for " + component)
 
-        installer_url = s3_addy + "/" + dist + "/" + date + "/" + installer_name
+        installer_url = s3_addy + "/" + dist + "/" + date_or_sha + "/" + installer_name
+        local_name = installer_name
 
     # Download the installer
-    print "downloading " + installer_url
-    response = urllib2.urlopen(installer_url)
-    if response.getcode() != 200:
-        raise Exception("couldn't download " + installer_url)
-
-    installer_file = temp_dir + "/" + installer_name
-    f = open(installer_file, "w")
-    while True:
-        buf = response.read(4096)
-        if not buf: break
-        f.write(buf)
-    f.close()
+    installer_file = temp_dir + "/" + local_name
+    download_file(installer_url, installer_file)
 
     # Unpack the installer
     unpack_dir = temp_dir + "/unpack"
@@ -255,21 +276,6 @@ def dist_folder(component):
         return "cargo-dist"
     return "dist"
 
-def cargo_rev_from_packaging(rustc_version):
-    print "downloading " + cargo_revs
-    response = urllib2.urlopen(cargo_revs)
-    if response.getcode() != 200:
-        raise Exception("couldn't download " + cargo_revs)
-    revs = response.read().strip()
-    for line in revs.split("\n"):
-        values = line.split(":")
-        version = values[0].strip()
-        date = values[1].strip()
-        if version == rustc_version:
-            return date
-    raise Exception("couldn't find cargo rev for " + rustc_version)
-
-
 def parse_short_version(version):
     p = re.compile("^\d*\.\d*\.\d*")
     m = p.match(version)
@@ -279,6 +285,29 @@ def parse_short_version(version):
     if v is None:
         raise Exception("couldn't parse version: " + version)
     return v
+
+def download_cargos(cargo_rev, short_version):
+    for host in host_list:
+        download_cargo(cargo_rev, short_version, host)
+
+def download_cargo(cargo_rev, short_version, host):
+    ci_url = cargo_ci_url(cargo_rev, host)
+    local_path = cargo_local_path(short_version, host)
+    download_file(ci_url, local_path)
+
+def download_file(url, path):
+    print "downloading " + url + " to " + path
+    response = urllib2.urlopen(url)
+    if response.getcode() != 200:
+        raise Exception("couldn't download " + url)
+
+    f = open(path, "w")
+    while True:
+        buf = response.read(4096)
+        if not buf: break
+        f.write(buf)
+    f.close()
+    response.close()
 
 def generate_manifest(rustc_date, rustc_version, rustc_short_version,
                       cargo_rev, cargo_version, cargo_short_version):
@@ -314,9 +343,8 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
     doc_pkg = build_package_def_from_archive("rust-docs", "dist", rustc_date,
                                              rustc_version, rustc_short_version,
                                              host_list)
-    cargo_pkg = build_package_def_from_archive("cargo", "cargo-dist", cargo_rev,
-                                               cargo_version, cargo_short_version,
-                                               host_list)
+    cargo_pkg = build_package_def_for_cargo(cargo_version, cargo_short_version,
+                                            host_list)
     mingw_pkg = build_package_def_from_archive("rust-mingw", "dist", rustc_date,
                                                rustc_version, rustc_short_version,
                                                mingw_list)
@@ -412,14 +440,46 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
 # from the archives.
 def build_package_def_from_archive(name, dist_dir, archive_date,
                                    version, short_version, target_list):
+    assert name != "cargo"
+
     target_pkgs = {}
     for target in target_list:
         url = live_package_url(name, dist_dir, archive_date, short_version, target)
         if url is not None:
+            hash = hash_from_s3_installer(url)
             target_pkgs[target] = {
                 "available": True,
                 "url": url.replace(s3_addy, public_addy),
-                "hash": hash_from_s3_installer(url),
+                "hash": hash
+            }
+        else:
+            print "error: " + name + " for " + target + " not available"
+            target_pkgs[target] = {
+                "available": False,
+                "url": "",
+                "hash": ""
+            }
+
+    return {
+        "version": version,
+        "target": target_pkgs
+    }
+
+# The cargo packages are not uploaded to their final location yet. They
+# are still only on the local disk, after being downloaded from cargo CI
+def build_package_def_for_cargo(version, short_version, target_list):
+    target_pkgs = {}
+    for target in target_list:
+        url = cargo_live_url(short_version, target)
+        path = cargo_local_path(short_version, target)
+
+        if os.path.exists(path):
+            hash = file_hash(path)
+            assert hash != None
+            target_pkgs[target] = {
+                "available": True,
+                "url": url,
+                "hash": hash
             }
         else:
             print "error: " + name + " for " + target + " not available"
@@ -441,12 +501,9 @@ def build_package_def_from_archive(name, dist_dir, archive_date,
 # "rustc-nightly-$triple.tar.gz" or "rustc-$version-$triple.tar.gz". So
 # it will try both.
 def live_package_url(name, dist_dir, date, version, target):
-    # Cargo builds are always named 'nightly'
-    maybe_channel = channel
+    assert name != "cargo"
 
-    if name == "cargo":
-        url1 = cargo_addy + "/" + date + "/cargo-nightly-" + target + ".tar.gz"
-    elif name == "rust-src":
+    if name == "rust-src":
         # The build system treats source packages as a separate target for `rustc`
         # but for rustup we'd like to treat them as a completely separate package.
         url1 = s3_addy + "/" + dist_dir + "/" + date + "/rust-src-" + version + ".tar.gz"
@@ -504,15 +561,20 @@ def url_and_hash_of_rust_package(target, rustc_short_version):
         print "error: rust package missing: " + local_file
         return None
 
-    hash = None
-    with open(local_file, 'rb') as f:
-        buf = f.read()
-        hash = hashlib.sha256(buf).hexdigest()
+    hash = file_hash(local_file)
+    assert hash != None
 
     return {
         "url": url,
         "hash": hash,
     }
+
+def file_hash(path):
+    hash = None
+    with open(path, 'rb') as f:
+        buf = f.read()
+        hash = hashlib.sha256(buf).hexdigest()
+    return hash
 
 def write_manifest(manifest, file_path):
     def quote(value):
