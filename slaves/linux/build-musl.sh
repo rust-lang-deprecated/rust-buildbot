@@ -21,8 +21,8 @@ cd ..
 
 # To build MUSL we're going to need a libunwind lying around, so acquire that
 # here and build it.
-curl http://llvm.org/releases/3.7.0/llvm-3.7.0.src.tar.xz | tar xJf -
-curl http://llvm.org/releases/3.7.0/libunwind-3.7.0.src.tar.xz | tar xJf -
+curl http://releases.llvm.org/3.7.0/llvm-3.7.0.src.tar.xz | tar xJf -
+curl http://releases.llvm.org/3.7.0/libunwind-3.7.0.src.tar.xz | tar xJf -
 mkdir libunwind-build
 cd libunwind-build
 # for x86_64
