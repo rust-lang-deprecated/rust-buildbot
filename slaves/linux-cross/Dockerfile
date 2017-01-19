@@ -7,10 +7,6 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         zlib1g-dev \
         bzip2 xz-utils \
         g++ libc6-dev \
-        g++-powerpc-linux-gnu libc6-dev-powerpc-cross \
-        g++-5-powerpc64-linux-gnu libc6-dev-ppc64-powerpc-cross \
-        g++-powerpc64le-linux-gnu libc6-dev-ppc64el-cross \
-        g++-s390x-linux-gnu \
         bsdtar \
         cmake \
         g++-5-mips-linux-gnu libc6-dev-mips-cross \
@@ -60,6 +56,10 @@ COPY linux-cross/build_toolchain.sh \
     linux-cross/mipsel-linux-musl.config \
     linux-cross/armv7-linux-gnueabihf.config \
     linux-cross/armv7-linux-musleabihf.config \
+    linux-cross/powerpc-linux-gnu.config \
+    linux-cross/powerpc64-linux-gnu.config \
+    linux-cross/powerpc64le-linux-gnu.config \
+    linux-cross/s390x-linux-gnu.config \
     /build/
 USER rustbuild
 
@@ -108,11 +108,19 @@ RUN /bin/bash build_toolchain.sh arm-linux-musleabi
 RUN /bin/bash build_toolchain.sh arm-linux-musleabihf
 RUN /bin/bash build_toolchain.sh armv7-linux-musleabihf
 
+# Also build toolchains for {powerpc{,64{,le}},s390x}-unknown-linux-gnu,
+# primarily to support older glibc than found in the Ubuntu root.
+RUN /bin/bash build_toolchain.sh powerpc-linux-gnu
+RUN /bin/bash build_toolchain.sh powerpc64-linux-gnu
+RUN /bin/bash build_toolchain.sh powerpc64le-linux-gnu
+RUN /bin/bash build_toolchain.sh s390x-linux-gnu
+
 USER root
 
 # Rename all the compilers we just built into /usr/bin and also without
 # `-unknown-` in the name because it appears lots of other compilers in Ubuntu
 # don't have this name in the component by default either.
+# Also rename `-ibm-` out of the s390x compilers.
 # Also the aarch64 compiler is prefixed with `aarch64-unknown-linux-gnueabi`
 # by crosstool-ng, but Ubuntu just prefixes it with `aarch64-linux-gnu` so
 # we'll, additionally, strip the eabi part from its binaries.
@@ -120,6 +128,10 @@ RUN                                                                           \
   for f in `ls /x-tools/*-unknown-linux-*/bin/*-unknown-linux-*`; do          \
     g=`basename $f`;                                                          \
     ln -vs $f /usr/bin/`echo $g | sed -e 's/-unknown//'`;                     \
+  done && \
+  for f in `ls /x-tools/*-ibm-linux-*/bin/*-ibm-linux-*`; do                  \
+    g=`basename $f`;                                                          \
+    ln -vs $f /usr/bin/`echo $g | sed -e 's/-ibm//'`;                         \
   done && \
   for f in `ls /usr/bin/aarch64-linux-gnueabi-*`; do                          \
     g=`basename $f`;                                                          \
@@ -184,8 +196,8 @@ ENV AR_armv7_unknown_linux_gnueabihf=armv7-linux-gnueabihf-ar \
     CC_mipsel_unknown_linux_musl=mipsel-linux-musl-gcc \
     CXX_mipsel_unknown_linux_musl=mipsel-linux-musl-g++ \
     AR_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-ar \
-    CC_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-gcc-5 \
-    CXX_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-g++-5 \
+    CC_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-gcc \
+    CXX_powerpc64_unknown_linux_gnu=powerpc64-linux-gnu-g++ \
     AR_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-ar \
     CC_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-gcc \
     CXX_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-g++ \

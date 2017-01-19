@@ -223,3 +223,56 @@ For targets: `mipsel-unknown-linux-musl`
 (+) These options have been selected to match the gcc flags we use to compile C
     libraries like jemalloc. See the mk/cfg/mips(el)-uknown-linux-musl.mk
     file in Rust's source code.
+
+## `powerpc-linux-gnu.config`
+
+For targets: `powerpc-unknown-linux-gnu`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = powerpc
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.10.93 -- ~RHEL7 kernel
+- C-library > glibc version = 2.17 -- ~RHEL7 glibc
+- C compiler > gcc version = 5.2
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
+## `powerpc64-linux-gnu.config`
+
+For targets: `powerpc64-unknown-linux-gnu`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = powerpc
+- Target options > Bitness = 64-bit
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.10.93 -- ~RHEL7 kernel
+- C-library > glibc version = 2.17 -- ~RHEL7 glibc
+- C compiler > gcc version = 5.2
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
+## `powerpc64le-linux-gnu.config`
+
+For targets: `powerpc64le-unknown-linux-gnu`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = powerpc
+- Target options > Endianness = **Little** endian
+- Target options > Bitness = 64-bit
+- Target options > Emit assembly for CPU = power8
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.14.57 -- ppc64le support was introduced in 3.13
+- C-library > glibc version = 2.19 -- ppc64le support was introduced in this version
+- C compiler > gcc version = 5.2.0
+- C compiler > C++ = ENABLE -- to cross compile LLVM
+
+## `s390x-linux-gnu.config`
+
+For targets: `s390x-unknown-linux-gnu`
+
+- Path and misc options > Prefix directory = /x-tools/${CT\_TARGET}
+- Target options > Target Architecture = s390
+- Target options > Bitness = 64-bit
+- Operating System > Target OS = linux
+- Operating System > Linux kernel version = 3.10.93 -- ~RHEL7 kernel
+- C-library > glibc version = 2.17 -- ~RHEL7 glibc
+- C compiler > gcc version = 5.2
+- C compiler > C++ = ENABLE -- to cross compile LLVM
