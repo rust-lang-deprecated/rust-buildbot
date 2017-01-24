@@ -9,6 +9,7 @@ RUN apt-get install -y --force-yes --no-install-recommends \
         g++ libc6-dev \
         bsdtar \
         cmake \
+        rpm2cpio cpio \
         g++-5-mips-linux-gnu libc6-dev-mips-cross \
         g++-5-mipsel-linux-gnu libc6-dev-mipsel-cross \
         pkg-config
@@ -58,9 +59,9 @@ COPY linux-cross/build_toolchain.sh \
     linux-cross/armv7-linux-musleabihf.config \
     linux-cross/powerpc-linux-gnu.config \
     linux-cross/powerpc64-linux-gnu.config \
-    linux-cross/powerpc64le-linux-gnu.config \
     linux-cross/s390x-linux-gnu.config \
     /build/
+COPY linux-cross/patches /build/patches
 USER rustbuild
 
 # Build three full toolchains for the `arm-unknown-linux-gneuabi`,
@@ -108,11 +109,10 @@ RUN /bin/bash build_toolchain.sh arm-linux-musleabi
 RUN /bin/bash build_toolchain.sh arm-linux-musleabihf
 RUN /bin/bash build_toolchain.sh armv7-linux-musleabihf
 
-# Also build toolchains for {powerpc{,64{,le}},s390x}-unknown-linux-gnu,
+# Also build toolchains for {powerpc{,64},s390x}-unknown-linux-gnu,
 # primarily to support older glibc than found in the Ubuntu root.
 RUN /bin/bash build_toolchain.sh powerpc-linux-gnu
 RUN /bin/bash build_toolchain.sh powerpc64-linux-gnu
-RUN /bin/bash build_toolchain.sh powerpc64le-linux-gnu
 RUN /bin/bash build_toolchain.sh s390x-linux-gnu
 
 USER root
@@ -145,6 +145,11 @@ COPY linux-cross/build_dragonfly_toolchain.sh /tmp/
 RUN bash /tmp/build_dragonfly_toolchain.sh
 COPY linux-cross/build_netbsd_toolchain.sh /tmp/
 RUN bash /tmp/build_netbsd_toolchain.sh
+
+# powerpc64le is built using centos7 glibc, because that has
+# backports that weren't committed upstream until glibc-2.19.
+COPY linux-cross/build_powerpc64le_linux_toolchain.sh /tmp/
+RUN bash /tmp/build_powerpc64le_linux_toolchain.sh
 
 # Also build libunwind.a for the ARM musl targets
 COPY linux-cross/build-libunwind.sh \
