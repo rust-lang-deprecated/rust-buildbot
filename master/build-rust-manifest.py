@@ -332,7 +332,7 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
 
     packages = {}
 
-    # Build all the non-rust packages. All the artifects here are
+    # Build all the non-rust packages. All the artifacts here are
     # already in the archives and will be verified.
     rustc_pkg = build_package_def_from_archive("rustc", "dist", rustc_date,
                                                rustc_version, rustc_short_version,
@@ -358,6 +358,13 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
     packages["cargo"] = cargo_pkg
     packages["rust-mingw"] = mingw_pkg
     packages["rust-src"] = src_pkg
+
+    if channel == "nightly":
+        analysis_pkg = build_package_def_from_archive("rust-analysis", "dist", rustc_date,
+                                                      rustc_version, rustc_short_version,
+                                                      target_list)
+        packages["rust-analysis"] = analysis_pkg
+
 
     # Build the rust package. It is the only one with subcomponents
     rust_target_pkgs = {}
@@ -402,6 +409,12 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
         extensions += [{
             "pkg": "rust-src",
             "target": "*",
+        }]
+
+        if channel == "nightly":
+            extensions += [{
+            "pkg": "rust-analysis",
+            "target": target,
         }]
 
         # The binaries of the 'rust' package are on the local disk.
