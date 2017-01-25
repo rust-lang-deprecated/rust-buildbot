@@ -253,11 +253,15 @@ For targets: `powerpc64-unknown-linux-gnu`
 - Path and misc options > Local patch directory = /build/patches
 - Target options > Target Architecture = powerpc
 - Target options > Bitness = 64-bit
+- Target options > Emit assembly for CPU = power4 -- (+)
+- Target options > Tune for CPU = power6 -- (+)
 - Operating System > Target OS = linux
 - Operating System > Linux kernel version = 2.6.32.68 -- ~RHEL6 kernel
 - C-library > glibc version = 2.12.2 -- ~RHEL6 glibc
 - C compiler > gcc version = 4.9.3
 - C compiler > C++ = ENABLE -- to cross compile LLVM
+
+(+) These CPU options match the configuration of the toolchains in RHEL6.
 
 ## `s390x-linux-gnu.config`
 
