@@ -266,4 +266,5 @@ For targets: `s390x-unknown-linux-gnu`
 - Operating System > Linux kernel version = 2.6.32.68 -- ~RHEL6 kernel
 - C-library > glibc version = 2.12.2 -- ~RHEL6 glibc
 - C compiler > gcc version = 4.9.3
+- C compiler > gcc extra config = --with-arch=z10 -- LLVM's minimum support
 - C compiler > C++ = ENABLE -- to cross compile LLVM
