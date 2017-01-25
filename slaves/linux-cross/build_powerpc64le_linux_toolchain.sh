@@ -49,6 +49,7 @@ cd ../gcc-build
 ../gcc-$GCC/configure                            \
   --enable-languages=c,c++                       \
   --target=$TARGET                               \
+  --with-cpu=power8                              \
   --with-sysroot=$SYSROOT                        \
   --disable-libcilkrts                           \
   --disable-multilib                             \
