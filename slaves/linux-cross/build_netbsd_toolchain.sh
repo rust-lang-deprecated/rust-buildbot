@@ -68,8 +68,8 @@ cd gcc
 curl https://ftp.gnu.org/gnu/gcc/gcc-$GCC/gcc-$GCC.tar.bz2 | tar xjf -
 cd gcc-$GCC
 ./contrib/download_prerequisites
-PATCHES="ftp://ftp.netbsd.org/pub/pkgsrc/pkgsrc-2016Q2/pkgsrc/lang/gcc5/patches/patch-libstdc%2B%2B-v3_config_os_bsd_netbsd_ctype__base.h \
-         ftp://ftp.netbsd.org/pub/pkgsrc/pkgsrc-2016Q2/pkgsrc/lang/gcc5/patches/patch-libstdc%2B%2B-v3_config_os_bsd_netbsd_ctype__configure__char.cc"
+PATCHES="ftp://ftp.netbsd.org/pub/pkgsrc/pkgsrc-2016Q4/pkgsrc/lang/gcc5/patches/patch-libstdc%2B%2B-v3_config_os_bsd_netbsd_ctype__base.h \
+         ftp://ftp.netbsd.org/pub/pkgsrc/pkgsrc-2016Q4/pkgsrc/lang/gcc5/patches/patch-libstdc%2B%2B-v3_config_os_bsd_netbsd_ctype__configure__char.cc"
 
 for patch in $PATCHES; do
   curl $patch | patch -Np0

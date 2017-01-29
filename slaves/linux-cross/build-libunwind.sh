@@ -5,11 +5,11 @@ set -ex
 # To build MUSL targets we're going to need a libunwind lying around, so acquire that
 # here and build it.
 if [ ! -d "llvm-3.8.0.src"  ]; then
-    curl http://llvm.org/releases/3.8.0/llvm-3.8.0.src.tar.xz | tar xJf -
+    curl http://releases.llvm.org/3.8.0/llvm-3.8.0.src.tar.xz | tar xJf -
 fi
 
 if [ ! -d "libunwind-3.8.0.src" ]; then
-    curl http://llvm.org/releases/3.8.0/libunwind-3.8.0.src.tar.xz | tar xJf -
+    curl http://releases.llvm.org/3.8.0/libunwind-3.8.0.src.tar.xz | tar xJf -
 fi
 
 rm -rf libunwind-build
