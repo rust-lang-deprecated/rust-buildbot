@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=7.51.0
-SHA256=7f8240048907e5030f67be0a6129bc4b333783b9cca1391026d700835a788dde
+VERSION=7.52.1
+SHA256=d16185a767cb2c1ba3d5b9096ec54e5ec198b213f45864a38b3bda4bbf87389b
 
 curl http://cool.haxx.se/download/curl-$VERSION.tar.bz2 | \
   tee >(sha256sum > curl-$VERSION.tar.bz2.sha256)       | tar xjf -

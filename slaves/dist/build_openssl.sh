@@ -2,8 +2,8 @@
 
 set -ex
 
-VERSION=1.0.2j
-SHA256=e7aff292be21c259c6af26469c7a9b3ba26e9abaaffd325e3dccc9785256c431
+VERSION=1.0.2k
+SHA256=6b3977c61f2aedf0f96367dcfb5c6e578cf37e7b8d913b4ecb6643c3cb88d8c0
 
 yum install -y setarch
 curl ftp://ftp.openssl.org/source/openssl-$VERSION.tar.gz | \
