@@ -412,10 +412,11 @@ def build_manifest(rustc_date, rustc_version, rustc_short_version,
         }]
 
         if channel == "nightly":
-            extensions += [{
-            "pkg": "rust-analysis",
-            "target": target,
-        }]
+            for target in target_list:
+                extensions += [{
+                    "pkg": "rust-analysis",
+                    "target": target,
+                }]
 
         # The binaries of the 'rust' package are on the local disk.
         # url_and_hash_of_rust_package will try to locate them
